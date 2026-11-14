@@ -47,7 +47,7 @@ The Supabase service role key is **not** used. Never put it in a `NEXT_PUBLIC_*`
 
 ## Deploy on Cloudflare
 
-1. Cloudflare dashboard → **Workers & Pages** → **Create** → **Import a repository** → pick GitHub repo `lbasy`.
+1. Cloudflare dashboard → **Workers & Pages** → **Create** → **Import a repository** → pick GitHub repo `Lbasy-Store`.
 2. Settings:
    - Project name: `lbasy` (must match `name` in `wrangler.jsonc`)
    - Build command: `npx opennextjs-cloudflare build`
