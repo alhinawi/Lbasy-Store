@@ -37,6 +37,8 @@ export async function POST(req: Request) {
     if (error) {
       const m = /SOLD:([\w,-]+)/.exec(error.message);
       if (m) return NextResponse.json({ error: "sold", sold: m[1].split(",") }, { status: 409 });
+      const inv = /INVALID:(\w+)/.exec(error.message);
+      if (inv) return NextResponse.json({ error: "invalid", field: inv[1] }, { status: 400 });
       console.error("[lbasy] place_order failed", error.message);
       return NextResponse.json({ error: "server" }, { status: 500 });
     }

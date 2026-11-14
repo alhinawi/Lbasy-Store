@@ -19,14 +19,6 @@ function check<T>(r: { data: T; error: { message: string } | null }): T {
   return r.data;
 }
 
-async function refreshStore() {
-  if (isDemo) return;
-  const { data } = await sb().auth.getSession();
-  const token = data.session?.access_token;
-  if (!token) return;
-  await fetch("/api/revalidate", { method: "POST", headers: { Authorization: `Bearer ${token}` } }).catch(() => {});
-}
-
 /** Resize a photo in the browser before upload: smaller files, faster store. */
 export async function resizeImage(file: File, maxSide = 1600, quality = 0.82): Promise<Blob> {
   const bitmap = await createImageBitmap(file).catch(() => null);
@@ -96,7 +88,6 @@ export const adminApi = {
     }
     const row = { ...p, updated_at: new Date().toISOString() };
     check(await sb().from("products").upsert(row));
-    await refreshStore();
   },
 
   async deleteProduct(id: string) {
@@ -107,7 +98,6 @@ export const adminApi = {
       return;
     }
     check(await sb().from("products").delete().eq("id", id));
-    await refreshStore();
   },
 
   async uploadImage(file: File, folder: string): Promise<string> {
@@ -124,7 +114,14 @@ export const adminApi = {
   // Orders
   async orders(): Promise<Order[]> {
     if (isDemo) return demo.get().orders;
-    return check(await sb().from("orders").select("*").order("created_at", { ascending: false }).limit(1000)) as Order[];
+    // Items live in their own table (order_items); PostgREST joins them in as "items".
+    return check(
+      await sb()
+        .from("orders")
+        .select("*, items:order_items(product_id, slug, name_ar, name_en, brand, size, price, image)")
+        .order("created_at", { ascending: false })
+        .limit(1000),
+    ) as unknown as Order[];
   },
 
   async setOrderStatus(id: string, status: OrderStatus) {
@@ -141,7 +138,6 @@ export const adminApi = {
       return;
     }
     check(await sb().rpc("admin_set_order_status", { order_id: id, new_status: status }));
-    await refreshStore();
   },
 
   // Drops
@@ -164,7 +160,6 @@ export const adminApi = {
     }
     if (originalSlug && originalSlug !== d.slug) check(await sb().from("drops").update(d).eq("slug", originalSlug));
     else check(await sb().from("drops").upsert(d));
-    await refreshStore();
   },
 
   async deleteDrop(slug: string) {
@@ -176,7 +171,6 @@ export const adminApi = {
       return;
     }
     check(await sb().from("drops").delete().eq("slug", slug));
-    await refreshStore();
   },
 
   // Shipping
@@ -193,7 +187,6 @@ export const adminApi = {
       return;
     }
     check(await sb().from("shipping_zones").upsert(zones));
-    await refreshStore();
   },
 
   resetDemo() {
