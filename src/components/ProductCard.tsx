@@ -21,7 +21,6 @@ export function ProductCard({ p, lang, priority = false }: { p: Product; lang: L
           priority={priority}
           quality={70}
         />
-        {(p.images[0]?.startsWith("/editorial/") || p.images[0]?.startsWith("/ai/")) && <span className="absolute bottom-2 end-2 bg-white/90 px-2 py-1 text-[8px] text-black">{lang === "ar" ? "تصوّر بالـAI" : "AI illustration"}</span>}
         {p.images[1] && !sold && (
           <ProductImage
             src={p.images[1]}

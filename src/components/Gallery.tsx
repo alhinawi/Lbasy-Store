@@ -2,9 +2,13 @@
 
 import { useRef, useState } from "react";
 import { ProductImage } from "./ProductImage";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useLang } from "./LangProvider";
 
 export function Gallery({ images, alt, sold, soldLabel }: { images: string[]; alt: string; sold: boolean; soldLabel: string }) {
   const [idx, setIdx] = useState(0);
+  const { lang } = useLang();
+  const views = lang === "ar" ? ["من الأمام", "من الجانب", "من الخلف", "نظرة أقرب"] : ["Front", "Side", "Back", "Closer view"];
   const track = useRef<HTMLDivElement>(null);
 
   const go = (i: number) => {
@@ -30,7 +34,7 @@ export function Gallery({ images, alt, sold, soldLabel }: { images: string[]; al
             <div key={src + i} className="relative aspect-[4/5] w-full shrink-0 snap-start bg-sand">
               <ProductImage
                 src={src}
-                alt={`${alt} ${i + 1}`}
+                alt={`${alt} - ${views[i] || i + 1}`}
                 fill
                 priority={i === 0}
                 sizes="(min-width: 768px) 50vw, 100vw"
@@ -52,13 +56,23 @@ export function Gallery({ images, alt, sold, soldLabel }: { images: string[]; al
         )}
       </div>
       {images.length > 1 && (
-        <div className="mt-3 hidden gap-3 sm:flex">
+        <div className="mt-3 flex items-center justify-between border-b border-line pb-3 text-xs">
+          <span aria-live="polite">{views[idx] || idx + 1} <span className="ms-2 text-muted">{idx + 1} / {images.length}</span></span>
+          <div className="flex gap-2" dir="ltr">
+            <button type="button" aria-label={lang === "ar" ? "الصورة السابقة" : "Previous view"} className="border border-line p-2 hover:bg-sand" onClick={() => go((idx - 1 + images.length) % images.length)}><ChevronLeft size={18}/></button>
+            <button type="button" aria-label={lang === "ar" ? "الصورة التالية" : "Next view"} className="border border-line p-2 hover:bg-sand" onClick={() => go((idx + 1) % images.length)}><ChevronRight size={18}/></button>
+          </div>
+        </div>
+      )}
+      {images.length > 1 && (
+        <div className="mt-3 flex gap-3">
           {images.map((src, i) => (
             <button
               key={src + i}
               onClick={() => go(i)}
               className={`relative aspect-[4/5] w-20 overflow-hidden rounded-xl border-2 transition ${i === idx ? "border-ink" : "border-transparent opacity-70 hover:opacity-100"}`}
-              aria-label={`${i + 1}`}
+              aria-label={views[i] || `${i + 1}`}
+              aria-pressed={i === idx}
             >
               <ProductImage src={src} alt="" fill sizes="80px" className="object-cover" quality={70} />
             </button>
