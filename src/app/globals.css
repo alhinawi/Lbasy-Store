@@ -1,26 +1,136 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@theme {
+  --color-ink: #17150f;
+  --color-ink-soft: #3a352b;
+  --color-paper: #f6f1e7;
+  --color-cream: #fbf8f2;
+  --color-sand: #ebe1cf;
+  --color-line: #ddd2bf;
+  --color-muted: #6f675a;
+  --color-clay: #b4502a;
+  --color-clay-dark: #93401f;
+  --color-sea: #1d4b48;
+  --color-sea-light: #d7e5e1;
+  --color-gold: #c99a3d;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --font-sans: var(--font-body), system-ui, sans-serif;
+  --font-display: var(--font-kufi), var(--font-body), system-ui, sans-serif;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.375rem;
+
+  --animate-fade-up: fade-up 0.5s ease-out both;
+  --animate-slide-in: slide-in 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes slide-in {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-paper text-ink font-sans antialiased;
+    font-feature-settings: "kern";
+  }
+  ::selection {
+    background: var(--color-clay);
+    color: var(--color-cream);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-clay);
+    outline-offset: 2px;
+  }
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
+
+@utility container-x {
+  @apply mx-auto w-full max-w-6xl px-4 sm:px-6;
+}
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50;
+}
+@utility btn-primary {
+  @apply btn bg-ink text-cream hover:bg-ink-soft;
+}
+@utility btn-clay {
+  @apply btn bg-clay text-cream hover:bg-clay-dark;
+}
+@utility btn-ghost {
+  @apply btn border border-ink/15 bg-cream text-ink hover:border-ink/40;
+}
+@utility btn-wa {
+  @apply btn bg-[#1f7a4d] text-white hover:bg-[#19663f];
+}
+@utility chip {
+  @apply inline-flex items-center gap-1 rounded-full border border-line bg-cream px-3 py-1.5 text-xs font-medium text-ink-soft transition;
+}
+@utility chip-on {
+  @apply border-ink bg-ink text-cream;
+}
+@utility field {
+  @apply w-full rounded-xl border border-line bg-cream px-4 py-3 text-ink placeholder:text-muted/70 focus:border-ink focus:outline-none;
+}
+@utility label {
+  @apply mb-1.5 block text-sm font-medium text-ink-soft;
+}
+@utility eyebrow {
+  @apply text-[11px] font-semibold uppercase tracking-[0.18em] text-clay;
+}
+@utility h-display {
+  @apply font-display leading-[1.15] tracking-tight;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+.grain {
+  background-image: radial-gradient(rgba(23, 21, 15, 0.06) 1px, transparent 1px);
+  background-size: 4px 4px;
+}
+
+/* Ticket edge used on drop cards */
+.ticket {
+  -webkit-mask: radial-gradient(circle 9px at 0 50%, transparent 98%, #000) left / 51% 100% no-repeat,
+    radial-gradient(circle 9px at 100% 50%, transparent 98%, #000) right / 51% 100% no-repeat;
+  mask: radial-gradient(circle 9px at 0 50%, transparent 98%, #000) left / 51% 100% no-repeat,
+    radial-gradient(circle 9px at 100% 50%, transparent 98%, #000) right / 51% 100% no-repeat;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
 }
