@@ -19,16 +19,18 @@ export function ProductsPanel() {
   const [cat, setCat] = useState("");
   const [err, setErr] = useState("");
 
-  const load = () => {
-    setErr("");
+  const fetchAll = () =>
     Promise.all([adminApi.products(), adminApi.drops()])
       .then(([p, dr]) => {
+        setErr("");
         setProducts(p);
         setDrops(dr);
       })
       .catch((e) => setErr(String(e.message ?? e)));
-  };
-  useEffect(load, []);
+  const load = () => void fetchAll();
+  useEffect(() => {
+    void fetchAll();
+  }, []);
 
   const list = useMemo(() => {
     const s = q.trim().toLowerCase();

@@ -15,6 +15,30 @@ interface Facets {
 
 const list = (v: string | null) => (v ? v.split(",").filter(Boolean) : []);
 
+function Chips({
+  items,
+  sel,
+  set,
+  label,
+}: {
+  items: [string, number][];
+  sel: string[];
+  set: (v: string[]) => void;
+  label: (v: string) => string;
+}) {
+  const toggle = (v: string) => set(sel.includes(v) ? sel.filter((x) => x !== v) : [...sel, v]);
+  return (
+    <div className="flex flex-wrap gap-2">
+      {items.map(([v, n]) => (
+        <button key={v} type="button" onClick={() => toggle(v)} className={`chip ${sel.includes(v) ? "chip-on" : ""}`}>
+          {label(v)}
+          <span className="opacity-50">{n}</span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export function FilterBar({ facets, total }: { facets: Facets; total: number }) {
   const { d } = useLang();
   const router = useRouter();
@@ -29,15 +53,16 @@ export function FilterBar({ facets, total }: { facets: Facets; total: number }) 
   const [max, setMax] = useState("");
   const [avail, setAvail] = useState(false);
 
-  const sync = () => {
+  // Load the current URL filters into the sheet each time it opens.
+  const openSheet = () => {
     setSizes(list(sp.get("size")));
     setBrands(list(sp.get("brand")));
     setConds(list(sp.get("condition")));
     setMin(sp.get("min") ?? "");
     setMax(sp.get("max") ?? "");
     setAvail(sp.get("available") === "1");
+    setOpen(true);
   };
-  useEffect(sync, [sp]);
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
   }, [open]);
@@ -76,24 +101,10 @@ export function FilterBar({ facets, total }: { facets: Facets; total: number }) 
     push(next);
   };
 
-  const toggle = (arr: string[], set: (v: string[]) => void, v: string) =>
-    set(arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v]);
-
-  const Chips = ({ items, sel, set, label }: { items: [string, number][]; sel: string[]; set: (v: string[]) => void; label: (v: string) => string }) => (
-    <div className="flex flex-wrap gap-2">
-      {items.map(([v, n]) => (
-        <button key={v} type="button" onClick={() => toggle(sel, set, v)} className={`chip ${sel.includes(v) ? "chip-on" : ""}`}>
-          {label(v)}
-          <span className="opacity-50">{n}</span>
-        </button>
-      ))}
-    </div>
-  );
-
   return (
     <>
       <div className="flex items-center gap-2">
-        <button onClick={() => setOpen(true)} className="btn-ghost py-2.5">
+        <button onClick={openSheet} className="btn-ghost py-2.5">
           <SlidersHorizontal className="h-4 w-4" />
           {d.filters}
           {activeCount > 0 && (

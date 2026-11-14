@@ -22,11 +22,18 @@ export function OrdersPanel() {
   const [open, setOpen] = useState<string | null>(null);
   const [err, setErr] = useState("");
 
-  const load = () => {
-    setErr("");
-    adminApi.orders().then(setOrders).catch((e) => setErr(String(e.message ?? e)));
-  };
-  useEffect(load, []);
+  const fetchOrders = () =>
+    adminApi
+      .orders()
+      .then((o) => {
+        setErr("");
+        setOrders(o);
+      })
+      .catch((e) => setErr(String(e.message ?? e)));
+  const load = () => void fetchOrders();
+  useEffect(() => {
+    void fetchOrders();
+  }, []);
 
   const counts = useMemo(() => {
     const c: Record<string, number> = { all: orders?.length ?? 0 };

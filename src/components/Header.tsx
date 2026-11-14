@@ -9,6 +9,14 @@ import { Wordmark } from "./Logo";
 import { href, switchLangPath } from "@/lib/i18n";
 import { useHydrated, useShop } from "@/lib/store";
 
+function Badge({ n, show }: { n: number; show: boolean }) {
+  return show && n > 0 ? (
+    <span className="absolute -top-1 -end-1 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-clay px-1 text-[10px] font-bold text-cream">
+      {n}
+    </span>
+  ) : null;
+}
+
 export function Header() {
   const { lang, d } = useLang();
   const pathname = usePathname();
@@ -20,10 +28,13 @@ export function Header() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [q, setQ] = useState("");
 
-  useEffect(() => {
+  // Close the menu and search when the route changes.
+  const [lastPath, setLastPath] = useState(pathname);
+  if (pathname !== lastPath) {
+    setLastPath(pathname);
     setOpen(false);
     setSearchOpen(false);
-  }, [pathname]);
+  }
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -43,13 +54,6 @@ export function Header() {
     if (!q.trim()) return;
     router.push(`${href(lang, "/search")}?q=${encodeURIComponent(q.trim())}`);
   };
-
-  const Badge = ({ n }: { n: number }) =>
-    hydrated && n > 0 ? (
-      <span className="absolute -top-1 -end-1 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-clay px-1 text-[10px] font-bold text-cream">
-        {n}
-      </span>
-    ) : null;
 
   return (
     <>
@@ -96,11 +100,11 @@ export function Header() {
             </Link>
             <Link href={href(lang, "/favorites")} className="relative grid h-10 w-10 place-items-center rounded-full hover:bg-sand" aria-label={d.nav.favorites}>
               <Heart className="h-5 w-5" />
-              <Badge n={favCount} />
+              <Badge n={favCount} show={hydrated} />
             </Link>
             <Link href={href(lang, "/cart")} className="relative grid h-10 w-10 place-items-center rounded-full hover:bg-sand" aria-label={d.nav.cart}>
               <ShoppingBag className="h-5 w-5" />
-              <Badge n={cartCount} />
+              <Badge n={cartCount} show={hydrated} />
             </Link>
           </div>
         </div>

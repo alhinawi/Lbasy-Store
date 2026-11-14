@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { Order } from "./types";
@@ -52,8 +52,11 @@ export const useShop = create<ShopState>()(
 );
 
 /** True after the persisted store has loaded in the browser. */
+const noopSubscribe = () => () => {};
 export function useHydrated() {
-  const [h, setH] = useState(false);
-  useEffect(() => setH(true), []);
-  return h;
+  return useSyncExternalStore(
+    noopSubscribe,
+    () => true,
+    () => false,
+  );
 }
