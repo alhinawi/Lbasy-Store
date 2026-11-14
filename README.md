@@ -5,7 +5,7 @@ Arabic (RTL) by default, English under `/en`. Cash on delivery, shipping fee per
 and an admin page at `/admin`.
 
 Stack: Next.js 16 (App Router, TypeScript, Tailwind CSS 4), Supabase (database, auth, photo storage),
-deployed to Cloudflare Workers with the OpenNext Cloudflare adapter.
+deployed to Cloudflare Pages (OpenNext Cloudflare adapter, packaged for Pages).
 
 Without Supabase settings the site runs on built-in sample data (26 pieces, 3 drops). Orders in
 that mode are kept in the visitor's browser only, and the admin uses a demo password.
@@ -24,7 +24,8 @@ Checks:
 npm run lint
 npm run typecheck
 npm run build
-npm run preview              # builds for Cloudflare and runs it locally on http://localhost:8787
+npm run pages:build          # builds for Cloudflare Pages into dist/
+npm run pages:dev            # runs that build locally on http://localhost:8788
 ```
 
 ## Environment variables
@@ -34,7 +35,7 @@ Cloudflare add them as **build variables**, then redeploy after changing one.
 
 | Variable | Required | Example | What it does |
 | --- | --- | --- | --- |
-| `NEXT_PUBLIC_SITE_URL` | yes | `https://lbasy.example.workers.dev` | Public address, used for links, sitemap and share images. No trailing slash. |
+| `NEXT_PUBLIC_SITE_URL` | yes | `https://lbasy.pages.dev` | Public address, used for links, sitemap and share images. No trailing slash. |
 | `NEXT_PUBLIC_WHATSAPP_NUMBER` | yes | `201012345678` | Store WhatsApp in international format, no `+`. Used by "Order on WhatsApp". |
 | `NEXT_PUBLIC_SUPABASE_URL` | no | `https://abcd.supabase.co` | Supabase project URL. Leave empty to run on sample data. |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | no | `eyJ...` | Supabase anon (public) key. Needed together with the URL. |
@@ -45,23 +46,51 @@ Cloudflare add them as **build variables**, then redeploy after changing one.
 
 The Supabase service role key is **not** used. Never put it in a `NEXT_PUBLIC_*` variable.
 
-## Deploy on Cloudflare
+## Deploy on Cloudflare Pages
 
-1. Cloudflare dashboard → **Workers & Pages** → **Create** → **Import a repository** → pick GitHub repo `Lbasy-Store`.
-2. Settings:
-   - Project name: `lbasy` (must match `name` in `wrangler.jsonc`)
-   - Build command: `npx opennextjs-cloudflare build`
-   - Deploy command: `npx opennextjs-cloudflare deploy`
-   - Root directory: `/`
-3. Advanced settings → Build variables: add `NODE_VERSION` = `22` (also set in `.node-version`) and
-   the variables from the table above.
-4. Save and deploy. Every push to `main` deploys again.
+The site runs on Cloudflare Pages at `https://lbasy.pages.dev` (project name `lbasy`).
 
-The Worker config is in `wrangler.jsonc` (Node.js compatibility on). Prerendered pages are served
-from static assets, so no KV, R2 or D1 has to be created. With Supabase connected the catalog pages
-render on each request, so new and sold pieces show up right away.
+How it works: `@cloudflare/next-on-pages` only supports Next.js up to 15.5 and is deprecated, so the
+build still uses the OpenNext Cloudflare adapter and then packages its output for Pages
+"advanced mode" (`scripts/build-pages.mjs`):
 
-From your own machine you can also run `npx wrangler login` once, then `npm run deploy`.
+- `dist/` holds the static files from `.open-next/assets`.
+- `dist/_worker.js/` is the OpenNext server bundled by Wrangler. Pages gives it the same `ASSETS`
+  binding, so every page, the `/api/orders` route, the admin, share images and Supabase work as on Workers.
+- `dist/_routes.json` lets Pages serve `/_next/static/*` and the public files without the worker.
+
+The Pages config is `cloudflare/wrangler.jsonc` (it sits in its own folder because the root
+`wrangler.jsonc` is the config OpenNext reads while building, and a root `pages/` folder would be read
+by Next.js as a router).
+
+### Deploy from a machine
+
+```bash
+npx wrangler login             # or set CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID
+npm run pages:deploy           # build + upload to the lbasy project, production branch main
+```
+
+Put the variables from the table above in `.env.production.local` (git-ignored) before building.
+
+### Or connect the GitHub repo (automatic deploys)
+
+Cloudflare dashboard → **Workers & Pages** → **Create** → **Pages** → **Connect to Git** → `Lbasy-Store`:
+
+- Project name: `lbasy`
+- Production branch: `main`
+- Framework preset: `None`
+- Build command: `npm run pages:build`
+- Build output directory: `dist`
+- Root directory: `/`
+- Environment variables: `NODE_VERSION` = `22` (also in `.node-version`) and the variables from the table above.
+
+Then in the project → **Settings** → **Runtime**: compatibility date `2026-11-01` and compatibility
+flags `nodejs_compat` and `global_fetch_strictly_public` (Git builds do not read `cloudflare/wrangler.jsonc`).
+
+No KV, R2 or D1 has to be created: prerendered pages are read from the static files. With Supabase
+connected the catalog pages render on each request, so new and sold pieces show up right away.
+The root `wrangler.jsonc` still describes the same app as a Worker, and `npm run deploy` deploys it
+that way, but the live site is the Pages project.
 
 ## Connect Supabase
 
@@ -110,4 +139,4 @@ Shipping fees: **الشحن** (Shipping) tab. Drops: **الشحنات** (Drops) 
 - `src/app/api/orders/` checkout endpoint
 - `src/lib/data.ts` catalog reads (Supabase or sample data), `src/lib/seed.ts` sample data
 - `supabase/` database migration and seed
-- `open-next.config.ts`, `wrangler.jsonc` Cloudflare setup
+- `open-next.config.ts`, `wrangler.jsonc` OpenNext build config; `cloudflare/wrangler.jsonc`, `scripts/build-pages.mjs` Cloudflare Pages packaging

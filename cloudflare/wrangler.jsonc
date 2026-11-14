@@ -1,0 +1,10 @@
+// Cloudflare Pages project config, used by `npm run pages:deploy` and `npm run pages:dev`.
+// It lives in its own folder (not `pages/`, which Next.js would read as a router) because the root wrangler.jsonc is the Worker config
+// that `opennextjs-cloudflare build` reads to bundle the server.
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "lbasy",
+  "pages_build_output_dir": "../dist",
+  "compatibility_date": "2026-11-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"]
+}

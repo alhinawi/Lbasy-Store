@@ -11,7 +11,10 @@
     "cf:build": "opennextjs-cloudflare build",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
-    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
+    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
+    "pages:build": "opennextjs-cloudflare build && node scripts/build-pages.mjs",
+    "pages:dev": "wrangler pages dev --cwd cloudflare --port 8788",
+    "pages:deploy": "npm run pages:build && wrangler pages deploy --cwd cloudflare --project-name lbasy --branch main"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.119.0",
