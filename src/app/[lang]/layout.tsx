@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import "../globals.css";
 import { body, kufi } from "../fonts";
 import { StoreMotion } from "@/components/StoreMotion";
-import { SampleNotice } from "@/components/SampleNotice";
+
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { getStoreTheme } from "@/lib/themeServer";
 import { Header } from "@/components/Header";
@@ -63,7 +63,7 @@ export default async function LangLayout({ children, params }: LayoutProps<"/[la
       <body className="min-h-dvh">
         <LangProvider lang={lang}><ThemeProvider initialTheme={theme}><StoreMotion/>
           <Header />
-          {isSampleCatalog() && <SampleNotice lang={lang} />}
+
           <main>{children}</main>
           <Footer lang={lang} sample={isSampleCatalog()} />
           <Toast />

@@ -1,15 +1,24 @@
 import 'server-only';
 import { getCloudflareContext } from '@opennextjs/cloudflare';
 import { connection } from 'next/server';
-import { DEFAULT_THEME, isTheme, type ThemeId } from './themes';
+import { DEFAULT_THEME, isTheme, rotationTheme, type ThemeRotation, type ThemeId } from './themes';
 export interface ThemeKV { delete(key:string):Promise<void>; get(key:string):Promise<string|null>; put(key:string,value:string,options?:{expirationTtl:number}):Promise<void>; }
 export async function themeEnv(): Promise<{THEMES?:ThemeKV; SESSION_SECRET?:string}> {
  try { return (await getCloudflareContext({async:true})).env as unknown as {THEMES?:ThemeKV; SESSION_SECRET?:string}; }
  catch {return {SESSION_SECRET:process.env.SESSION_SECRET};}
 }
+export async function getThemeState() {
+ const e=await themeEnv();
+ const [saved, raw]=await Promise.all([e.THEMES?.get('active-theme'),e.THEMES?.get('theme-rotation')]);
+ let rotation: ThemeRotation = {enabled:false,intervalMinutes:1440,startedAt:Date.now(),startTheme:isTheme(saved)?saved:DEFAULT_THEME};
+ try {const r=JSON.parse(raw||'null');if(r&&typeof r.enabled==='boolean'&&Number.isFinite(r.intervalMinutes)&&r.intervalMinutes>=1&&Number.isFinite(r.startedAt)&&isTheme(r.startTheme))rotation=r;} catch {}
+ const theme=rotation.enabled?rotationTheme(rotation):(isTheme(saved)?saved:DEFAULT_THEME);
+ const nextChangeAt=rotation.enabled?rotation.startedAt+(Math.floor(Math.max(0,Date.now()-rotation.startedAt)/(rotation.intervalMinutes*60000))+1)*rotation.intervalMinutes*60000:null;
+ return {theme,rotation,nextChangeAt,shared:!!e.THEMES,publishReady:!!(e.THEMES&&e.SESSION_SECRET)};
+}
 export async function getStoreTheme():Promise<ThemeId> {
  await connection();
- try {const e=await themeEnv();const id=await e.THEMES?.get('active-theme');return isTheme(id)?id:DEFAULT_THEME;}catch{return DEFAULT_THEME;}
+ try {return (await getThemeState()).theme;}catch{return DEFAULT_THEME;}
 }
 const encoder=new TextEncoder();
 async function digest(value:string){return new Uint8Array(await crypto.subtle.digest('SHA-256',encoder.encode(value)));}

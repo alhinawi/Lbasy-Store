@@ -87,7 +87,7 @@ export default async function ProductPage({ params }: PageProps<"/[lang]/product
         <div>
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold uppercase tracking-[0.16em] text-muted">{p.brand}</span>
-            {!sold && <span className="rounded-full bg-sea-light px-2.5 py-0.5 text-[11px] font-semibold text-sea">{d.onlyOne}</span>}
+            {!sold && <span className="rounded-full bg-sea-light px-2.5 py-0.5 text-[11px] font-semibold text-sea">{isSampleCatalog()?(lang==="ar"?"أكد التوفر على واتساب":"Confirm availability"):d.onlyOne}</span>}
           </div>
           <h1 className="h-display mt-1.5 text-[30px] sm:text-4xl">{name}</h1>
           <div className="mt-3 flex flex-wrap items-baseline gap-3">
@@ -103,7 +103,7 @@ export default async function ProductPage({ params }: PageProps<"/[lang]/product
           <dl className="mt-6 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-line bg-line text-sm">
             {[
               [d.size, p.size],
-              [d.condition, d.conditions[p.condition]],
+              [d.condition, isSampleCatalog()?(lang==="ar"?"أكدها مع المتجر":"Confirm with the store"):d.conditions[p.condition]],
               [d.material, pick(p, "material", lang)],
               [d.color, pick(p, "color", lang)],
             ].map(([k, v]) => (
@@ -143,14 +143,14 @@ export default async function ProductPage({ params }: PageProps<"/[lang]/product
 
           <section className="mt-8 rounded-2xl border border-line bg-cream p-4">
             <div className="flex items-center justify-between">
-              <h2 className="font-semibold">{d.condition}: {d.conditions[p.condition]}</h2>
+              <h2 className="font-semibold">{isSampleCatalog()?(lang==="ar"?"تأكد من حالة القطعة":"Confirm the item condition"):`${d.condition}: ${d.conditions[p.condition]}`}</h2>
               <span className="flex gap-0.5">
                 {[0, 1, 2].map((k) => (
                   <span key={k} className={`h-3 w-2 rounded-full ${k < 3 - condIdx ? "bg-sea" : "bg-line"}`} />
                 ))}
               </span>
             </div>
-            <p className="mt-1 text-sm text-muted">{d.conditionHelp[p.condition]}</p>
+            <p className="mt-1 text-sm text-muted">{isSampleCatalog()?(lang==="ar"?"اسأل المتجر عن تفاصيل الحالة وأي آثار استعمال قبل اعتماد الطلب.":"Ask the store about condition and any signs of wear before confirming your order."):d.conditionHelp[p.condition]}</p>
             {notes && (
               <p className="mt-3 flex gap-2 border-t border-line pt-3 text-sm leading-7">
                 <Info className="mt-1 h-4 w-4 shrink-0 text-clay" />

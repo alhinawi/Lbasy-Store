@@ -10,7 +10,15 @@ export function ThemeProvider({ children, initialTheme = DEFAULT_THEME }: { chil
  useEffect(() => {
   const q = new URLSearchParams(window.location.search).get('theme-preview');
   if (q && findTheme(q).id === q) { queueMicrotask(() => { setId(findTheme(q).id); setPreview(true); }); return; }
-  fetch('/api/theme', { cache: 'no-store' }).then(r => r.json()).then(v => { if(v.theme) setId(findTheme(v.theme).id); }).catch(() => {});
+  let timer: ReturnType<typeof setTimeout>;
+  let stopped=false;
+  const refresh=()=>fetch('/api/theme', { cache: 'no-store' }).then(r => r.json()).then(v => {
+   if(stopped)return;
+   if(v.theme)setId(findTheme(v.theme).id);
+   timer=setTimeout(refresh,v.nextChangeAt?Math.min(60000,Math.max(1500,v.nextChangeAt-Date.now()+500)):60000);
+  }).catch(()=>{if(!stopped)timer=setTimeout(refresh,60000);});
+  refresh();
+  return ()=>{stopped=true;clearTimeout(timer);};
  }, []);
  const theme = findTheme(id);
  return <ThemeContext.Provider value={{theme,preview}}><div className="storefront" data-theme={theme.id} style={{'--theme-bg':theme.color,'--theme-ink':theme.ink} as React.CSSProperties}>{preview && <div className="theme-preview-bar">معاينة {theme.id} · {theme.ar} <Link href="/admin">العودة للوحة التحكم ←</Link></div>}{children}</div></ThemeContext.Provider>;

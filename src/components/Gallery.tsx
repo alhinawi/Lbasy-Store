@@ -8,7 +8,7 @@ import { useLang } from "./LangProvider";
 export function Gallery({ images, alt, sold, soldLabel }: { images: string[]; alt: string; sold: boolean; soldLabel: string }) {
   const [idx, setIdx] = useState(0);
   const { lang } = useLang();
-  const views = lang === "ar" ? ["من الأمام", "من الجانب", "من الخلف", "نظرة أقرب"] : ["Front", "Side", "Back", "Closer view"];
+  const views = lang === "ar" ? ["من الأمام", "من الجانب", "من الخلف", "نظرة أقرب", "القطعة لوحدها"] : ["Front", "Side", "Back", "Closer view", "Product only"];
   const track = useRef<HTMLDivElement>(null);
 
   const go = (i: number) => {

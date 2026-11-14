@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { isSampleCatalog } from "@/lib/data";
 import { ProductImage } from "./ProductImage";
 import { FavoriteButton } from "./FavoriteButton";
 import { formatPrice, href, pick, t } from "@/lib/i18n";
@@ -48,7 +49,7 @@ export function ProductCard({ p, lang, priority = false }: { p: Product; lang: L
       <div className="mt-2.5 px-0.5">
         <div className="flex items-center justify-between gap-2">
           <span className="truncate text-[11px] font-bold uppercase tracking-[0.12em] text-muted">{p.brand}</span>
-          <span className="shrink-0 text-[11px] text-muted">{d.conditions[p.condition]}</span>
+          <span className="shrink-0 text-[11px] text-muted">{isSampleCatalog()?(lang==="ar"?"أكد التوفر":"Check availability"):d.conditions[p.condition]}</span>
         </div>
         <h3 className="mt-0.5 truncate text-sm text-ink">{pick(p, "name", lang)}</h3>
         <div className="mt-1 flex items-baseline gap-2">

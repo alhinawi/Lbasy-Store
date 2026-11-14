@@ -6,6 +6,7 @@ import { normalizePhone, validateCheckout, type CheckoutInput } from "@/lib/vali
 import type { Order } from "@/lib/types";
 
 export async function POST(req: Request) {
+  if (!supabaseConfigured) return NextResponse.json({error:"availability_confirmation_required"},{status:503});
   let body: Partial<CheckoutInput>;
   try {
     body = await req.json();

@@ -8,6 +8,7 @@ import { useLang } from "./LangProvider";
 import { ProductImage } from "./ProductImage";
 import { useHydrated, useShop } from "@/lib/store";
 import { formatPrice, href, pick } from "@/lib/i18n";
+import { supabaseConfigured } from "@/lib/config";
 import { site, whatsappLink } from "@/lib/config";
 import { isEgyptMobile } from "@/lib/validate";
 import { saveDemoOrder } from "@/lib/demo";
@@ -112,6 +113,8 @@ export function CheckoutForm({ zones }: { zones: ShippingZone[] }) {
         <Link href={href(lang, "/shop")} className="btn-primary mt-6">{d.heroCta}</Link>
       </div>
     );
+
+  if (!supabaseConfigured) return <section className="container-x py-12 min-h-[50vh]"><h1 className="h-display text-3xl">{lang==="ar"?"أكد لُقطتك معانا":"Confirm your find"}</h1><p className="my-5 max-w-xl text-sm leading-8">{lang==="ar"?"ابعت اختياراتك على واتساب. هنأكدلك التوفر والسعر والحالة والمقاسات وتكلفة الشحن قبل اعتماد أي طلب. إضافة القطعة للسلة مش حجز، ومفيش أي دفع أونلاين هنا.":"Send your choices on WhatsApp. We will confirm availability, price, condition, measurements and shipping before any order is final. Adding an item to the bag does not reserve it. No online payment is taken here."}</p><a className="btn-wa" href={whatsappLink(waText())} target="_blank" rel="noopener"><MessageCircle size={18}/>{lang==="ar"?"تأكيد التوفر على واتساب":"Check availability on WhatsApp"}</a></section>;
 
   return (
     <form onSubmit={submit} noValidate className="container-x pb-10 pt-6">

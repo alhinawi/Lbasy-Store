@@ -18,3 +18,10 @@ export type StoreTheme = typeof themes[number];
 export const DEFAULT_THEME: ThemeId = 'B13';
 export const findTheme = (id: string | null | undefined): StoreTheme => themes.find(t => t.id === id) ?? themes[0];
 export const isTheme = (id: unknown): id is ThemeId => themes.some(t => t.id === id);
+
+export type ThemeRotation = { enabled: boolean; intervalMinutes: number; startedAt: number; startTheme: ThemeId };
+export function rotationTheme(rotation: ThemeRotation, now = Date.now()): ThemeId {
+ const start = themes.findIndex(t => t.id === rotation.startTheme);
+ const steps = Math.max(0, Math.floor((now - rotation.startedAt) / (rotation.intervalMinutes * 60000)));
+ return themes[(Math.max(0,start) + steps) % themes.length].id;
+}

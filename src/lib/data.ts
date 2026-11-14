@@ -36,7 +36,7 @@ function matchesQuery(p: Product, q: string) {
 
 function applyFilters(list: Product[], f: ProductFilters) {
   let out = list.filter((p) => {
-    if (f.gender && !(p.gender === f.gender || (p.gender === "unisex" && f.gender !== "kids"))) return false;
+    if (f.gender && !(p.gender === f.gender || (p.gender === "unisex" && f.gender === "men"))) return false;
     if (f.category && p.category !== f.category) return false;
     if (f.size?.length && !f.size.includes(p.size)) return false;
     if (f.brand?.length && !f.brand.includes(p.brand)) return false;

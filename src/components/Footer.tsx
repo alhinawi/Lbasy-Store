@@ -4,7 +4,7 @@ import { href, t, categories } from "@/lib/i18n";
 import { site, whatsappLink } from "@/lib/config";
 import type { Lang } from "@/lib/types";
 
-export function Footer({ lang, sample }: { lang: Lang; sample: boolean }) {
+export function Footer({ lang }: { lang: Lang; sample: boolean }) {
   const d = t(lang);
   return (
     <footer className="fashion-footer mt-20 bg-ink text-cream/80">
@@ -48,7 +48,7 @@ export function Footer({ lang, sample }: { lang: Lang; sample: boolean }) {
       <div className="border-t border-cream/10">
         <div className="container-x flex flex-col gap-1 py-5 text-xs text-cream/50 sm:flex-row sm:justify-between">
           <span>© {new Date().getFullYear()} {lang === "ar" ? site.name_ar : site.name_en}. {d.rights}</span>
-          {sample && <span>{d.sampleNote}</span>}
+          
         </div>
       </div>
     </footer>
