@@ -3,7 +3,6 @@ import { CheckoutForm } from "@/components/CheckoutForm";
 import { getShipping } from "@/lib/data";
 
 export const metadata: Metadata = { title: "إتمام الطلب / Checkout", robots: { index: false } };
-export const revalidate = 60;
 
 export default async function CheckoutPage() {
   const zones = await getShipping();

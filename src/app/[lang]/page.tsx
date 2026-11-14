@@ -9,7 +9,6 @@ import { conditions, formatDate, href, pick, t } from "@/lib/i18n";
 import { whatsappLink } from "@/lib/config";
 import type { Lang } from "@/lib/types";
 
-export const revalidate = 60;
 
 export default async function Home({ params }: PageProps<"/[lang]">) {
   const lang = (await params).lang as Lang;

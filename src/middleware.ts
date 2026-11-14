@@ -1,8 +1,10 @@
 import { NextResponse, type NextRequest } from "next/server";
 
+// Kept as middleware.ts (Edge runtime) instead of proxy.ts: the Cloudflare adapter
+// fully supports Edge middleware, while Node.js proxy support there is experimental.
 // Arabic is the default language and lives at the root (/shop, /product/...).
 // English lives under /en. Internally both are served by app/[lang].
-export function proxy(req: NextRequest) {
+export function middleware(req: NextRequest) {
   const { pathname, search } = req.nextUrl;
 
   if (pathname === "/ar" || pathname.startsWith("/ar/")) {

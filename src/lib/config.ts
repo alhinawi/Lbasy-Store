@@ -1,7 +1,7 @@
 export const site = {
   name_ar: "لباسي",
   name_en: "Lbasy",
-  url: (process.env.NEXT_PUBLIC_SITE_URL || "https://lbasy.vercel.app").replace(/\/$/, ""),
+  url: (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, ""),
   // Egyptian number in international format without + (e.g. 201012345678). Empty = WhatsApp lets the customer pick the chat.
   whatsapp: (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "").replace(/\D/g, ""),
   instagram: process.env.NEXT_PUBLIC_INSTAGRAM_URL || "",

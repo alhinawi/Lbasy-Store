@@ -3,8 +3,6 @@ import { site } from "@/lib/config";
 import { getDrops, getProducts } from "@/lib/data";
 import { categories } from "@/lib/i18n";
 
-export const revalidate = 3600;
-
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [products, drops] = await Promise.all([getProducts(), getDrops()]);
   const both = (path: string, extra: Partial<MetadataRoute.Sitemap[number]> = {}) => ({

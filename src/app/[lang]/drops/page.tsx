@@ -5,7 +5,6 @@ import { getDrops, getProducts } from "@/lib/data";
 import { formatDate, href, pick, t } from "@/lib/i18n";
 import type { Lang } from "@/lib/types";
 
-export const revalidate = 60;
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/drops">): Promise<Metadata> {
   const lang = (await params).lang as Lang;

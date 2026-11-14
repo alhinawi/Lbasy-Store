@@ -6,17 +6,15 @@ import { Gallery } from "@/components/Gallery";
 import { BuyBox } from "@/components/BuyBox";
 import { ProductCard } from "@/components/ProductCard";
 import { SectionHead } from "@/components/Section";
-import { getProduct, getProducts, getSimilar } from "@/lib/data";
+import { getBuildSlugs, getProduct, getSimilar } from "@/lib/data";
 import { conditions, formatPrice, href, pick, t } from "@/lib/i18n";
 import { snap } from "@/lib/snap";
 import { site } from "@/lib/config";
 import type { Lang, MeasureKey } from "@/lib/types";
 
-export const revalidate = 60;
 
 export async function generateStaticParams() {
-  const products = await getProducts();
-  return products.slice(0, 50).map((p) => ({ slug: p.slug }));
+  return (await getBuildSlugs()).map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/product/[slug]">): Promise<Metadata> {
