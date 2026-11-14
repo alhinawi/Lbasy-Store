@@ -10,5 +10,6 @@
   },
   "observability": {
     "enabled": true
-  }
+  },
+  "kv_namespaces": [{ "binding": "THEMES", "id": "907df2ab45f84a6c9054d6733fa6ebf6" }]
 }

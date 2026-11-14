@@ -17,6 +17,8 @@
     "pages:deploy": "npm run pages:build && wrangler pages deploy --cwd cloudflare --project-name lbasy --branch main"
   },
   "dependencies": {
+    "@simplewebauthn/browser": "^14.0.0",
+    "@simplewebauthn/server": "^14.1.0",
     "@supabase/supabase-js": "^2.119.0",
     "lucide-react": "^1.73.0",
     "next": "16.4.6",

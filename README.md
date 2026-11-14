@@ -140,3 +140,23 @@ Shipping fees: **الشحن** (Shipping) tab. Drops: **الشحنات** (Drops) 
 - `src/lib/data.ts` catalog reads (Supabase or sample data), `src/lib/seed.ts` sample data
 - `supabase/` database migration and seed
 - `open-next.config.ts`, `wrangler.jsonc` OpenNext build config; `cloudflare/wrangler.jsonc`, `scripts/build-pages.mjs` Cloudflare Pages packaging
+
+## The White Issue redesign
+
+B13 is the default storefront. The dashboard contains 13 campaign/layout themes, with full-screen previews and a separate Publish action. Publishing uses Cloudflare KV binding `THEMES` so it affects visitors, not only the current browser. KV propagation can take about a minute. OG images are 1200x630 and follow the active theme.
+
+The current catalog contains 80 sample variants built from 32 original AI-generated product images. All editorial campaign imagery is also AI-generated. Prices (EGP 129-599), sizes, measurements and condition are illustrative, not actual offers or stock. Replace these with real inventory before taking orders. The public notice and product notes make this explicit.
+
+### Passwordless theme administration
+
+Live admin authentication uses WebAuthn passkeys with required user verification. The first passkey requires an eight-digit, short-lived one-time enrollment code. That code is delivered privately to the owner, never stored in this repository. The device's fingerprint/face data never reaches the website. Subsequent sign-in uses the registered passkey. Sessions are signed with a server-only `SESSION_SECRET` and stored in Secure, HTTP-only, same-site cookies.
+
+Required runtime bindings:
+- `THEMES`: Cloudflare KV namespace for active theme, public passkey record, short-lived challenges, and enrollment attempt limits.
+- `SESSION_SECRET`: server-only random signing key, set as a Cloudflare secret. Never give it a `NEXT_PUBLIC_` prefix.
+
+Theme changes require an authenticated session and same-origin requests. Unauthenticated requests cannot publish. Enrollment codes expire after a short window and are consumed when registration starts. If registration is cancelled or the code expires, ask for a fresh code through the owner's trusted channel. Lost-device recovery requires verifying the owner, resetting the registered public passkey and issuing a fresh enrollment code; it is not an open public reset endpoint.
+
+Products, drops, shipping and orders retain the existing demo/Supabase behavior. Without Supabase, those admin edits remain device-local. Shared theme persistence does not make the sample inventory or demo orders live. Connecting Supabase still requires configuring the database and its admin access separately.
+
+The storefront supports touch swipe rails, scroll-snap category browsing, carousel buttons and scroll reveals. Motion is disabled when reduced-motion is requested.

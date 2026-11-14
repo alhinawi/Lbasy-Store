@@ -10,8 +10,8 @@ export function ProductCard({ p, lang, priority = false }: { p: Product; lang: L
   const sold = p.stock < 1;
   const off = p.compare_at_price && p.compare_at_price > p.price ? Math.round((1 - p.price / p.compare_at_price) * 100) : 0;
   return (
-    <Link href={href(lang, `/product/${p.slug}`)} className="group block">
-      <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-sand">
+    <Link href={href(lang, `/product/${p.slug}`)} className="fashion-product-card group block">
+      <div className="fashion-product-image relative aspect-[4/5] overflow-hidden rounded-2xl bg-sand">
         <ProductImage
           src={p.images[0]}
           alt={`${p.brand} ${pick(p, "name", lang)}`}
@@ -21,6 +21,7 @@ export function ProductCard({ p, lang, priority = false }: { p: Product; lang: L
           priority={priority}
           quality={70}
         />
+        {(p.images[0]?.startsWith("/editorial/") || p.images[0]?.startsWith("/ai/")) && <span className="absolute bottom-2 end-2 bg-white/90 px-2 py-1 text-[8px] text-black">{lang === "ar" ? "تصوّر بالـAI" : "AI illustration"}</span>}
         {p.images[1] && !sold && (
           <ProductImage
             src={p.images[1]}
@@ -52,7 +53,7 @@ export function ProductCard({ p, lang, priority = false }: { p: Product; lang: L
         </div>
         <h3 className="mt-0.5 truncate text-sm text-ink">{pick(p, "name", lang)}</h3>
         <div className="mt-1 flex items-baseline gap-2">
-          <span className={`text-[15px] font-bold ${sold ? "text-muted line-through" : "text-ink"}`}>{formatPrice(p.price, lang)}</span>
+          <span className={`price-label text-[15px] font-bold ${sold ? "text-muted line-through" : "text-ink"}`}>{formatPrice(p.price, lang)}</span>
           {!sold && off > 0 && <span className="text-xs text-muted line-through">{formatPrice(p.compare_at_price!, lang)}</span>}
         </div>
       </div>

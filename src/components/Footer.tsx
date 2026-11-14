@@ -7,7 +7,7 @@ import type { Lang } from "@/lib/types";
 export function Footer({ lang, sample }: { lang: Lang; sample: boolean }) {
   const d = t(lang);
   return (
-    <footer className="mt-20 bg-ink text-cream/80">
+    <footer className="fashion-footer mt-20 bg-ink text-cream/80">
       <div className="container-x grid gap-10 py-14 md:grid-cols-[1.4fr_1fr_1fr]">
         <div>
           <div className="inline-block rounded-2xl bg-paper px-3 py-2">
@@ -35,8 +35,10 @@ export function Footer({ lang, sample }: { lang: Lang; sample: boolean }) {
         <div>
           <h3 className="font-display text-lg text-cream">{d.footerHelp}</h3>
           <ul className="mt-4 space-y-2.5 text-sm">
-            <li>{d.trust[2].t}</li>
-            <li>{d.trust[3].t}</li>
+            <li><Link href={href(lang, "/shipping")}>{lang === "ar" ? "الشحن والدفع" : "Shipping & payment"}</Link></li>
+            <li><Link href={href(lang, "/returns")}>{lang === "ar" ? "الاستبدال والاسترجاع" : "Returns"}</Link></li>
+            <li><Link href={href(lang, "/faq")}>{lang === "ar" ? "الأسئلة الشائعة" : "FAQ"}</Link></li>
+            <li><Link href={href(lang, "/contact")}>{lang === "ar" ? "تواصل معنا" : "Contact"}</Link></li>
             <li><Link href={href(lang, "/#condition")} className="hover:text-cream">{d.conditionGuide}</Link></li>
             {site.instagram && <li><a href={site.instagram} target="_blank" rel="noopener" className="hover:text-cream">Instagram</a></li>}
             {site.facebook && <li><a href={site.facebook} target="_blank" rel="noopener" className="hover:text-cream">Facebook</a></li>}

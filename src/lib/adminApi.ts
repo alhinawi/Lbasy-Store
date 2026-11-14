@@ -43,7 +43,10 @@ const blobToDataUrl = (b: Blob) =>
 
 export const adminApi = {
   async session(): Promise<string | null> {
-    if (isDemo) return sessionStorage.getItem(DEMO_SESSION) ? "demo@lbasy" : null;
+    if (isDemo) {
+      try { const r = await fetch("/api/admin/session", { cache: "no-store" }); const v = await r.json(); if (v.configured) return v.authenticated ? "store-admin" : null; } catch {}
+      return sessionStorage.getItem(DEMO_SESSION) ? "demo@lbasy" : null;
+    }
     const { data } = await sb().auth.getSession();
     if (!data.session) return null;
     const { data: ok } = await sb().rpc("is_admin");
@@ -52,6 +55,7 @@ export const adminApi = {
 
   async signIn(email: string, password: string): Promise<"ok" | "bad" | "not_admin"> {
     if (isDemo) {
+      try {const info = await fetch("/api/admin/session", { cache: "no-store" }).then(r=>r.json()); if(info.configured){const r=await fetch("/api/admin/session",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({password})}); return r.ok ? "ok" : "bad";}} catch {return "bad";}
       if (password !== demoAdminPassword) return "bad";
       sessionStorage.setItem(DEMO_SESSION, "1");
       return "ok";
@@ -67,7 +71,7 @@ export const adminApi = {
   },
 
   async signOut() {
-    if (isDemo) sessionStorage.removeItem(DEMO_SESSION);
+    if (isDemo) { sessionStorage.removeItem(DEMO_SESSION); await fetch("/api/admin/session",{method:"DELETE"}); }
     else await sb().auth.signOut();
   },
 

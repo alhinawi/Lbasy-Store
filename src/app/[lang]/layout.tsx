@@ -2,6 +2,10 @@ import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
 import "../globals.css";
 import { body, kufi } from "../fonts";
+import { StoreMotion } from "@/components/StoreMotion";
+import { SampleNotice } from "@/components/SampleNotice";
+import { ThemeProvider } from "@/components/ThemeProvider";
+import { getStoreTheme } from "@/lib/themeServer";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Toast } from "@/components/Toast";
@@ -15,7 +19,7 @@ export function generateStaticParams() {
 }
 
 export const viewport: Viewport = {
-  themeColor: "#f6f1e7",
+  themeColor: "#ffffff",
   width: "device-width",
   initialScale: 1,
 };
@@ -23,6 +27,7 @@ export const viewport: Viewport = {
 export async function generateMetadata({ params }: LayoutProps<"/[lang]">): Promise<Metadata> {
   const { lang } = await params;
   const ar = lang !== "en";
+  const activeTheme = await getStoreTheme();
   const name = ar ? site.name_ar : site.name_en;
   const title = ar ? "لباسي | بالة بورسعيد أونلاين - براندات أجنبية مستعملة" : "Lbasy | Port Said bala online - pre-loved foreign brands";
   const description = t(ar ? "ar" : "en").heroText;
@@ -41,9 +46,9 @@ export async function generateMetadata({ params }: LayoutProps<"/[lang]">): Prom
       locale: ar ? "ar_EG" : "en_US",
       title,
       description,
-      images: [{ url: "/brand/og.png", width: 1200, height: 630, alt: name }],
+      images: [{ url: `/brand/og-${activeTheme}.png`, width: 1200, height: 630, alt: name }],
     },
-    twitter: { card: "summary_large_image", title, description, images: ["/brand/og.png"] },
+    twitter: { card: "summary_large_image", title, description, images: [`/brand/og-${activeTheme}.png`] },
     icons: { icon: "/icon.svg", apple: "/brand/apple-icon.png" },
     manifest: "/manifest.webmanifest",
   };
@@ -52,15 +57,17 @@ export async function generateMetadata({ params }: LayoutProps<"/[lang]">): Prom
 export default async function LangLayout({ children, params }: LayoutProps<"/[lang]">) {
   const { lang } = await params;
   if (!isLang(lang)) notFound();
+  const theme = await getStoreTheme();
   return (
     <html lang={lang} dir={lang === "ar" ? "rtl" : "ltr"} className={`${body.variable} ${kufi.variable}`}>
       <body className="min-h-dvh">
-        <LangProvider lang={lang}>
+        <LangProvider lang={lang}><ThemeProvider initialTheme={theme}><StoreMotion/>
           <Header />
+          {isSampleCatalog() && <SampleNotice lang={lang} />}
           <main>{children}</main>
           <Footer lang={lang} sample={isSampleCatalog()} />
           <Toast />
-        </LangProvider>
+        </ThemeProvider></LangProvider>
       </body>
     </html>
   );

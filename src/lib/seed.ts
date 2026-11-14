@@ -2,7 +2,10 @@
 // Every product here is a demo piece so the store looks complete before real stock is added.
 import type { Drop, Product, ShippingZone } from "./types";
 
-const img = (slug: string) => [`/products/${slug}-1.webp`, `/products/${slug}-2.webp`];
+const img = (slug: string) => {
+  const file = /501|jeans|denim/.test(slug) ? "jeans" : /hoodie/.test(slug) ? "hoodie" : /tee|shirt|polo/.test(slug) ? "tee" : /converse|martens|sneaker|balance|air|shoe/.test(slug) ? "sneaker" : /tote|bag/.test(slug) ? "bag" : /leather/.test(slug) ? "leather" : /knit|merino|sweater|sweat/.test(slug) ? "sweat" : "rack";
+  return [`/editorial/${file}.webp`];
+};
 
 export const sampleDrops: Drop[] = [
   {
@@ -12,7 +15,7 @@ export const sampleDrops: Drop[] = [
     subtitle_ar: "جواكت وتريكوهات شتوي لسه واصلين من بورسعيد",
     subtitle_en: "Winter jackets and knits, fresh from Port Said",
     date: "2026-11-12",
-    cover: "/brand/hero-wide.webp",
+    cover: "/editorial/coatman.webp",
     published: true,
   },
   {
@@ -22,7 +25,7 @@ export const sampleDrops: Drop[] = [
     subtitle_ar: "جينزات أصلية وكوتشيات متنقية واحدة واحدة",
     subtitle_en: "Original denim and hand-picked sneakers",
     date: "2026-10-29",
-    cover: "/products/levis-501-1.webp",
+    cover: "/editorial/jeans.webp",
     published: true,
   },
   {
@@ -32,12 +35,12 @@ export const sampleDrops: Drop[] = [
     subtitle_ar: "فساتين وقمصان خفيفة بأسعار ماتتفوتش",
     subtitle_en: "Light dresses and shirts at prices you won't skip",
     date: "2026-10-15",
-    cover: "/products/mango-linen-dress-1.webp",
+    cover: "/editorial/rack.webp",
     published: true,
   },
 ];
 
-export const sampleProducts: Product[] = [
+const baseProducts: Product[] = [
   {
     id: "p01", slug: "carhartt-detroit-jacket-brown", name_ar: "جاكيت شغل كانڤاس بني", name_en: "Brown canvas work jacket",
     brand: "Carhartt", gender: "men", category: "jackets", size: "L",
@@ -249,6 +252,13 @@ export const sampleProducts: Product[] = [
 ];
 
 // Sample fees in EGP. Edit them from the admin (Shipping page).
+const aiEdit = [["بليزر أسود", "Black blazer", "jackets", "men", 449], ["قميص كاروهات", "Checked overshirt", "shirts", "men", 249], ["جاكيت ليذر أسود", "Black biker jacket", "jackets", "men", 599], ["تريكو ضفاير كريمي", "Cream cable-knit", "knitwear", "women", 279], ["هودي رمادي", "Grey hoodie", "hoodies", "unisex", 299], ["كارديجان كراميل", "Camel cardigan", "knitwear", "women", 329], ["تريكو كحلي", "Navy crewneck", "knitwear", "men", 249], ["سويت شيرت أبيض", "White sweatshirt", "hoodies", "unisex", 229], ["تريكو مخطط", "Striped knit", "knitwear", "men", 279], ["جينز أزرق مستقيم", "Straight blue jeans", "jeans", "men", 349], ["تي شيرت أسود", "Black T-shirt", "tshirts", "unisex", 149], ["تي شيرت أبيض", "White T-shirt", "tshirts", "unisex", 149], ["بنطلون رمادي واسع", "Charcoal trousers", "pants", "men", 299], ["جاكيت فيلد زيتي", "Olive field jacket", "jackets", "men", 449], ["تريكو بني دافي", "Rust pullover", "knitwear", "men", 249], ["جاكيت دنيم", "Denim jacket", "jackets", "unisex", 399], ["سنيكرز أبيض", "White sneakers", "shoes", "unisex", 349], ["شنطة كتف سوداء", "Black shoulder bag", "bags", "women", 249], ["شنطة جلد كراميل", "Tan satchel", "bags", "unisex", 299], ["شوز كلاسيك أسود", "Black dress shoes", "shoes", "men", 399], ["جينز فاتح", "Light blue jeans", "jeans", "women", 329], ["فستان تريكو طويل", "Long knit dress", "dresses", "women", 449], ["ترينش بيج طويل", "Beige trench coat", "coats", "women", 599], ["جيب أسود طويل", "Long black skirt", "pants", "women", 249], ["هودي عنابي", "Burgundy hoodie", "hoodies", "unisex", 299], ["تريكو أخضر غامق", "Forest green knit", "knitwear", "unisex", 279], ["كوتشي كانڤاس كريمي", "Cream canvas shoes", "shoes", "unisex", 249], ["جاكيت بافر أطفال", "Kids padded jacket", "jackets", "kids", 279], ["سويت شيرت أطفال", "Kids cream sweatshirt", "hoodies", "kids", 129], ["بوت بني", "Brown ankle boots", "shoes", "women", 399], ["قميص كتان بيج", "Beige linen shirt", "shirts", "unisex", 229], ["باك باك أسود", "Black backpack", "bags", "unisex", 249]] as const;
+// AI-created sample catalog. These are design examples, not merchant stock or real offers.
+export const sampleProducts: Product[] = Array.from({length:80},(_,i)=>{
+ const base=baseProducts[i%baseProducts.length];const [name_ar,name_en,category,gender,price]=aiEdit[i%aiEdit.length];
+ return {...base,id:`p${String(i+1).padStart(2,'0')}`,slug:i<baseProducts.length?base.slug:`lbasy-edit-${i+1}`,name_ar,name_en,category,gender,price,compare_at_price:null,brand:"LBASY EDIT",stock:1,size:gender==='kids'?['6-8Y','8-10Y','10-12Y'][i%3]:['S','M','L','XL'][Math.floor(i/16)%4],images:[`/ai/products/${String(i%32+1).padStart(2,'0')}.webp`],drop_slug:sampleDrops[Math.floor(i/28)%3].slug,featured:i%5===0,color_ar:"توضيحي",color_en:"Illustrative",material_ar:"غير محددة في العرض التجريبي",material_en:"Sample only",notes_ar:"صورة مولدة بالذكاء الاصطناعي، مش صورة مخزون فعلي. المقاسات والحالة والأسعار أمثلة للتجربة وليست عرض بيع حقيقي.",notes_en:"AI-generated illustration, not actual stock. Measurements, condition and prices are examples, not real offers."};
+});
+
 export const sampleShipping: ShippingZone[] = [
   { code: "PTS", name_ar: "بورسعيد", name_en: "Port Said", fee: 40, days: "1-2", active: true },
   { code: "C", name_ar: "القاهرة", name_en: "Cairo", fee: 60, days: "2-3", active: true },

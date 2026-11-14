@@ -7,11 +7,14 @@ import { adminApi, isDemo } from "@/lib/adminApi";
 import { OrdersPanel } from "./OrdersPanel";
 import { ProductsPanel } from "./ProductsPanel";
 import { DropsPanel } from "./DropsPanel";
+import { PasskeyLogin } from "./PasskeyLogin";
+import { ThemesPanel } from "./ThemesPanel";
 import { ShippingPanel } from "./ShippingPanel";
 
-type Tab = "orders" | "products" | "drops" | "shipping";
+type Tab = "themes" | "orders" | "products" | "drops" | "shipping";
 
 const tabs: { id: Tab; label: string; icon: typeof Package }[] = [
+  { id: "themes", label: "الثيمات", icon: Layers },
   { id: "orders", label: "الطلبات", icon: ShoppingCart },
   { id: "products", label: "القطع", icon: Package },
   { id: "drops", label: "الشحنات", icon: Layers },
@@ -20,7 +23,7 @@ const tabs: { id: Tab; label: string; icon: typeof Package }[] = [
 
 export function AdminApp() {
   const [user, setUser] = useState<string | null | undefined>(undefined);
-  const [tab, setTab] = useState<Tab>("orders");
+  const [tab, setTab] = useState<Tab>("themes");
 
   useEffect(() => {
     adminApi.session().then(setUser).catch(() => setUser(null));
@@ -63,19 +66,20 @@ export function AdminApp() {
         </div>
         {isDemo && (
           <div className="bg-gold/90 px-4 py-1.5 text-center text-xs font-medium text-ink">
-            وضع تجربة: التعديلات بتتحفظ على الجهاز ده بس ومش بتظهر للزباين، لحد ما توصّل سوبابيز.
+            المنتجات والطلبات في وضع تجربة محلي لحد توصيل سوبابيز. الثيمات لها نشر مشترك منفصل لو متصل.
           </div>
         )}
       </header>
 
       <main className="mx-auto max-w-6xl px-4 py-5">
+        {tab === "themes" && <ThemesPanel />}
         {tab === "orders" && <OrdersPanel />}
         {tab === "products" && <ProductsPanel />}
         {tab === "drops" && <DropsPanel />}
         {tab === "shipping" && <ShippingPanel />}
       </main>
 
-      <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t border-line bg-cream md:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-line bg-cream md:hidden">
         {tabs.map((t) => (
           <button key={t.id} onClick={() => setTab(t.id)} className={`flex flex-col items-center gap-0.5 py-2.5 text-[11px] ${tab === t.id ? "text-clay" : "text-muted"}`}>
             <t.icon className="h-5 w-5" />
@@ -88,10 +92,14 @@ export function AdminApp() {
 }
 
 function Login({ onDone }: { onDone: (u: string) => void }) {
+  const [mode, setMode] = useState<{configured:boolean;passkeyRegistered:boolean}|null>(null);
+  useEffect(()=>{fetch("/api/admin/session",{cache:"no-store"}).then(r=>r.json()).then(setMode).catch(()=>setMode({configured:false,passkeyRegistered:false}));},[]);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
+  if (!mode) return <div className="grid min-h-dvh place-items-center"><Loader2 className="animate-spin"/></div>;
+  if (mode.configured) return <PasskeyLogin registered={mode.passkeyRegistered} onDone={onDone}/>;
   return (
     <div className="grid min-h-dvh place-items-center px-4">
       <form
@@ -120,7 +128,7 @@ function Login({ onDone }: { onDone: (u: string) => void }) {
           <label className="label" htmlFor="pw">كلمة السر</label>
           <input id="pw" type="password" dir="ltr" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} className="field" required />
         </div>
-        {isDemo && <p className="mt-3 text-xs leading-6 text-muted">وضع التجربة شغال لحد ما توصّل سوبابيز. كلمة السر مكتوبة في ملف الشرح.</p>}
+        {isDemo && <p className="mt-3 text-xs leading-6 text-muted">وضع التجربة شغال لحد ما توصّل سوبابيز. لو النشر الآمن متصل، استخدم كلمة سر الأدمن الخاصة. خلاف كده، دي تجربة محلية فقط.</p>}
         {err && <p className="mt-3 text-sm text-clay">{err}</p>}
         <button disabled={busy} className="btn-primary mt-6 w-full">
           {busy && <Loader2 className="h-4 w-4 animate-spin" />}

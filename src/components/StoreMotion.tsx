@@ -1,0 +1,4 @@
+'use client';
+import {useEffect} from 'react';
+import {usePathname} from 'next/navigation';
+export function StoreMotion(){const path=usePathname();useEffect(()=>{if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;const nodes=document.querySelectorAll('.fashion-section-heading,.fashion-products>*,.fashion-category,.fashion-story,.fashion-drop,.fashion-philosophy,.fashion-contact');const observer=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('is-revealed');observer.unobserve(e.target);}}),{threshold:.06,rootMargin:'0px 0px 40px 0px'});nodes.forEach((n,i)=>{if(n.getBoundingClientRect().top>innerHeight){n.classList.add('reveal-on-scroll');(n as HTMLElement).style.setProperty('--reveal-delay',`${i%4*45}ms`);observer.observe(n);}});return()=>observer.disconnect();},[path]);return null}

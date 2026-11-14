@@ -6,7 +6,7 @@ import { Gallery } from "@/components/Gallery";
 import { BuyBox } from "@/components/BuyBox";
 import { ProductCard } from "@/components/ProductCard";
 import { SectionHead } from "@/components/Section";
-import { getBuildSlugs, getProduct, getSimilar } from "@/lib/data";
+import { getBuildSlugs, getProduct, getSimilar, isSampleCatalog } from "@/lib/data";
 import { conditions, formatPrice, href, pick, t } from "@/lib/i18n";
 import { snap } from "@/lib/snap";
 import { site } from "@/lib/config";
@@ -72,7 +72,7 @@ export default async function ProductPage({ params }: PageProps<"/[lang]/product
 
   return (
     <div className="container-x pb-24 pt-4 md:pb-0 md:pt-6">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      {!isSampleCatalog() && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />}
       <nav className="mb-3 hidden flex-wrap gap-1.5 text-xs text-muted sm:flex">
         <Link href={href(lang)} className="hover:text-ink">{d.nav.home}</Link>
         <span>/</span>

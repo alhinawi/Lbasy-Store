@@ -21,23 +21,6 @@ export function LogoMark({ className = "h-8 w-8" }: { className?: string }) {
   );
 }
 
-export function Wordmark({ lang, className = "" }: { lang: Lang; className?: string }) {
-  return (
-    <span className={`inline-flex items-center gap-2 ${className}`}>
-      <LogoMark className="h-8 w-8 shrink-0" />
-      <span className="flex flex-col leading-none">
-        {lang === "ar" ? (
-          <>
-            <span className="font-display text-[26px] leading-[0.9] text-ink">لباسي</span>
-            <span className="mt-0.5 text-[9px] font-semibold tracking-[0.32em] text-muted">LBASY</span>
-          </>
-        ) : (
-          <>
-            <span className="font-display text-[24px] font-normal leading-[0.9] tracking-[0.08em] text-ink">LBASY</span>
-            <span className="mt-0.5 text-[10px] font-semibold text-muted">لباسي</span>
-          </>
-        )}
-      </span>
-    </span>
-  );
+export function Wordmark({ className = "" }: { lang: Lang; className?: string }) {
+  return <span className={`fashion-wordmark ${className}`} dir="ltr">LBASY<small>PORT SAID · REWEAR</small></span>;
 }
