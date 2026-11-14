@@ -157,3 +157,5 @@
 .hero-edition{font-family:var(--font-body),sans-serif;letter-spacing:.04em;font-size:11px}
 .hero-copy p{font-size:14px;line-height:1.95;max-width:420px}
 @media(max-width:700px){.hero-edition{font-size:10px;line-height:1.8;text-align:start;margin-bottom:14px}.hero-journal .hero-copy{order:0;padding:0 0 25px}.hero-journal .hero-edition{order:-1}.hero-journal .hero-copy h1{font-size:40px;line-height:1.22;margin:8px 0 12px;max-width:100%}.hero-journal .hero-copy h1.hero-title-ar{font-size:39px;line-height:1.4;letter-spacing:-1.3px}.hero-journal .hero-copy p{font-size:12px;line-height:2;margin:10px 0 18px}.hero-journal .campaign-main{order:1;height:340px}.hero-journal .campaign-second{top:auto;bottom:60px;height:135px}.hero-journal .hero-foot{margin-top:30px}.hero-journal .hero-copy .editorial-kicker{display:none}}
+
+.hero-copy[dir="ltr"]{direction:ltr}
