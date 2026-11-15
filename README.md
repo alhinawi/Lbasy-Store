@@ -1,14 +1,24 @@
-# Lbasy (لباسي)
+# Lbasy | لباسي
 
-Online store for imported second-hand clothes from Port Said. Every piece is one of a kind.
-Arabic (RTL) by default, English under `/en`. Cash on delivery, shipping fee per governorate,
-and an admin page at `/admin`.
+[Open the live store](https://lbasy.pages.dev/)
 
-Stack: Next.js 16 (App Router, TypeScript, Tailwind CSS 4), Supabase (database, auth, photo storage),
-deployed to Cloudflare Pages (OpenNext Cloudflare adapter, packaged for Pages).
+An Arabic-first second-hand clothing storefront for one-of-a-kind pieces from Port Said, with English pages under `/en`, category browsing, favorites and a cash-on-delivery checkout flow.
 
-Without Supabase settings the site runs on built-in sample data (26 pieces, 3 drops). Orders in
-that mode are kept in the visitor's browser only, and the admin uses a demo password.
+## Storefront walkthrough
+
+![Signed-out Lbasy storefront and catalog walkthrough](docs/demo/walkthrough.gif)
+
+[Watch or download the MP4 recording](docs/demo/walkthrough.mp4). Two-voice Egyptian-Arabic narrated walkthrough, recorded from the live storefront on November 15, 2026.
+
+## Features and stack
+
+- Arabic RTL / English LTR storefront, product pages, drops and collections.
+- Favorites, size/category browsing and governorate-based shipping configuration.
+- Next.js App Router, React, TypeScript, Tailwind CSS and Zustand.
+- Supabase integration for database, authentication and product photos; Cloudflare Pages packaging through the OpenNext adapter.
+- A theme-administration flow is documented below.
+
+Without Supabase configuration, the app uses bundled sample products and browser-local order data. A demo checkout is not a confirmed merchant order. Set up a real backend and verify inventory, shipping and payment configuration before using it for sales. Never put real customer data into a demo admin session.
 
 ## Run locally
 
