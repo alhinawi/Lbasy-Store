@@ -1,14 +1,43 @@
-# Lbasy (لباسي)
+<div align="center">
 
-Online store for imported second-hand clothes from Port Said. Every piece is one of a kind.
-Arabic (RTL) by default, English under `/en`. Cash on delivery, shipping fee per governorate,
-and an admin page at `/admin`.
+# Lbasy · لباسي
 
-Stack: Next.js 16 (App Router, TypeScript, Tailwind CSS 4), Supabase (database, auth, photo storage),
-deployed to Cloudflare Pages (OpenNext Cloudflare adapter, packaged for Pages).
+### Imported second-hand clothes from Port Said — every piece one of a kind
 
-Without Supabase settings the site runs on built-in sample data (26 pieces, 3 drops). Orders in
-that mode are kept in the visitor's browser only, and the admin uses a demo password.
+A full online store: drops, per-governorate shipping, cash on delivery, WhatsApp
+ordering, and a complete admin panel. Arabic (RTL) by default, English under `/en`.
+
+[![Live site](https://img.shields.io/badge/live-lbasy.pages.dev-0f766e?style=for-the-badge)](https://lbasy.pages.dev)
+[![Next.js](https://img.shields.io/badge/Next.js-16-000000?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-v4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+[![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-3FCF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com)
+[![Cloudflare](https://img.shields.io/badge/Cloudflare-Pages-F38020?style=for-the-badge&logo=cloudflare&logoColor=white)](https://pages.cloudflare.com)
+
+[![Lbasy store](docs/screenshots/lbasy-hero.webp)](https://lbasy.pages.dev)
+
+**[Browse the store →](https://lbasy.pages.dev)**
+
+</div>
+
+---
+
+## What it is
+
+- **A real storefront** — drops, product pages with up to 8 photos, sizes and
+  measurements, condition and material, old/new prices.
+- **Checkout that can't oversell** — one database transaction locks the pieces, so if
+  two people order the same piece at the same moment, only one order goes through.
+- **Cash on delivery** with a shipping fee per governorate (27 governorates seeded).
+- **Order on WhatsApp** straight from the product page.
+- **Admin panel** at `/admin` — products, drops, shipping fees, order statuses;
+  cancelling an order puts its pieces back on sale automatically.
+- **Works with zero setup** — without Supabase variables the site runs on built-in
+  sample data (26 pieces, 3 drops) with a demo admin, so anyone can try it locally.
+
+## Stack
+
+Next.js 16 (App Router, TypeScript, Tailwind CSS 4) · Supabase (database, auth, photo
+storage) · Cloudflare Pages (OpenNext Cloudflare adapter, packaged for Pages).
 
 ## Run locally
 
@@ -39,7 +68,7 @@ Cloudflare add them as **build variables**, then redeploy after changing one.
 | `NEXT_PUBLIC_WHATSAPP_NUMBER` | yes | `201012345678` | Store WhatsApp in international format, no `+`. Used by "Order on WhatsApp". |
 | `NEXT_PUBLIC_SUPABASE_URL` | no | `https://abcd.supabase.co` | Supabase project URL. Leave empty to run on sample data. |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | no | `eyJ...` | Supabase anon (public) key. Needed together with the URL. |
-| `NEXT_PUBLIC_DEMO_ADMIN_PASSWORD` | no | `change-me` | Admin password in sample-data mode only (default `lbasy2026`). With Supabase, admins sign in with their Supabase account instead. |
+| `NEXT_PUBLIC_DEMO_ADMIN_PASSWORD` | no | `change-me` | Admin password in sample-data mode only. With Supabase, admins sign in with their Supabase account instead. |
 | `NEXT_PUBLIC_INSTAGRAM_URL` | no | `https://instagram.com/lbasy` | Shown in the footer. |
 | `NEXT_PUBLIC_FACEBOOK_URL` | no | `https://facebook.com/lbasy` | Shown in the footer. |
 | `NEXT_PUBLIC_ONLINE_PAYMENT` | no | `1` | Turns on the "online payment" option once a payment provider is wired in. Leave empty for now. |
@@ -51,7 +80,7 @@ The Supabase service role key is **not** used. Never put it in a `NEXT_PUBLIC_*`
 The site runs on Cloudflare Pages at `https://lbasy.pages.dev` (project name `lbasy`).
 
 How it works: `@cloudflare/next-on-pages` only supports Next.js up to 15.5 and is deprecated, so the
-build still uses the OpenNext Cloudflare adapter and then packages its output for Pages
+build uses the OpenNext Cloudflare adapter and then packages its output for Pages
 "advanced mode" (`scripts/build-pages.mjs`):
 
 - `dist/` holds the static files from `.open-next/assets`.
@@ -59,9 +88,7 @@ build still uses the OpenNext Cloudflare adapter and then packages its output fo
   binding, so every page, the `/api/orders` route, the admin, share images and Supabase work as on Workers.
 - `dist/_routes.json` lets Pages serve `/_next/static/*` and the public files without the worker.
 
-The Pages config is `cloudflare/wrangler.jsonc` (it sits in its own folder because the root
-`wrangler.jsonc` is the config OpenNext reads while building, and a root `pages/` folder would be read
-by Next.js as a router).
+The Pages config is `cloudflare/wrangler.jsonc`.
 
 ### Deploy from a machine
 
@@ -81,16 +108,13 @@ Cloudflare dashboard → **Workers & Pages** → **Create** → **Pages** → **
 - Framework preset: `None`
 - Build command: `npm run pages:build`
 - Build output directory: `dist`
-- Root directory: `/`
-- Environment variables: `NODE_VERSION` = `22` (also in `.node-version`) and the variables from the table above.
+- Environment variables: `NODE_VERSION` = `22` and the variables from the table above.
 
 Then in the project → **Settings** → **Runtime**: compatibility date `2026-11-01` and compatibility
-flags `nodejs_compat` and `global_fetch_strictly_public` (Git builds do not read `cloudflare/wrangler.jsonc`).
+flags `nodejs_compat` and `global_fetch_strictly_public`.
 
 No KV, R2 or D1 has to be created: prerendered pages are read from the static files. With Supabase
 connected the catalog pages render on each request, so new and sold pieces show up right away.
-The root `wrangler.jsonc` still describes the same app as a Worker, and `npm run deploy` deploys it
-that way, but the live site is the Pages project.
 
 ## Connect Supabase
 
@@ -130,33 +154,17 @@ orders), a public `products` storage bucket for photos (only admins upload), and
 When a piece is ordered it is marked sold automatically. To sell it again (for example after a
 return), cancel the order or set its stock back to 1.
 
-Shipping fees: **الشحن** (Shipping) tab. Drops: **الشحنات** (Drops) tab.
-
 ## Project layout
 
 - `src/app/[lang]/` store pages (`ar` is served without a prefix, `en` under `/en`)
 - `src/app/admin/` admin page, `src/components/admin/` its panels
 - `src/app/api/orders/` checkout endpoint
 - `src/lib/data.ts` catalog reads (Supabase or sample data), `src/lib/seed.ts` sample data
-- `supabase/` database migration and seed
-- `open-next.config.ts`, `wrangler.jsonc` OpenNext build config; `cloudflare/wrangler.jsonc`, `scripts/build-pages.mjs` Cloudflare Pages packaging
 
-## The White Issue redesign
+---
 
-B13 is the default storefront. The dashboard contains 13 campaign/layout themes, with full-screen previews and a separate Publish action. Publishing uses Cloudflare KV binding `THEMES` so it affects visitors, not only the current browser. KV propagation can take about a minute. OG images are 1200x630 and follow the active theme.
+<div align="center">
 
-The current catalog contains 80 sample variants built from 32 original AI-generated product images. All editorial campaign imagery is also AI-generated. Prices (EGP 129-599), sizes, measurements and condition are illustrative, not actual offers or stock. Replace these with real inventory before taking orders. The public notice and product notes make this explicit.
+Made with care by **Mohamed Alhinawi** · [lbasy.pages.dev](https://lbasy.pages.dev)
 
-### Passwordless theme administration
-
-Live admin authentication uses WebAuthn passkeys with required user verification. The first passkey requires an eight-digit, short-lived one-time enrollment code. That code is delivered privately to the owner, never stored in this repository. The device's fingerprint/face data never reaches the website. Subsequent sign-in uses the registered passkey. Sessions are signed with a server-only `SESSION_SECRET` and stored in Secure, HTTP-only, same-site cookies.
-
-Required runtime bindings:
-- `THEMES`: Cloudflare KV namespace for active theme, public passkey record, short-lived challenges, and enrollment attempt limits.
-- `SESSION_SECRET`: server-only random signing key, set as a Cloudflare secret. Never give it a `NEXT_PUBLIC_` prefix.
-
-Theme changes require an authenticated session and same-origin requests. Unauthenticated requests cannot publish. Enrollment codes expire after a short window and are consumed when registration starts. If registration is cancelled or the code expires, ask for a fresh code through the owner's trusted channel. Lost-device recovery requires verifying the owner, resetting the registered public passkey and issuing a fresh enrollment code; it is not an open public reset endpoint.
-
-Products, drops, shipping and orders retain the existing demo/Supabase behavior. Without Supabase, those admin edits remain device-local. Shared theme persistence does not make the sample inventory or demo orders live. Connecting Supabase still requires configuring the database and its admin access separately.
-
-The storefront supports touch swipe rails, scroll-snap category browsing, carousel buttons and scroll reveals. Motion is disabled when reduced-motion is requested.
+</div>
