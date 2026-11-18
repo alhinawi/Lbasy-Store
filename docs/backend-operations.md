@@ -50,3 +50,7 @@ Email verification and email password recovery are not configured. No email send
 ## Rollback
 
 Keep the previous deployed bundle and the D1 export. Redeploy the previous application bundle if required; keep the additive tables intact. Do not drop tables or delete real accounts/orders as a rollback. Restore a backup only with the owner's explicit data decision and after reconciling any orders created since the backup.
+
+## Required inventory activation
+
+Catalog imports are visible for browsing but start with `inventory_confirmed=0`. They cannot create a COD order. Licensed photos, generated design examples and supplier inspiration are not physical stock. In Admin > Products, an owner must explicitly confirm each actual piece's photos, size, condition and price using the inventory confirmation button. Editing a product resets that confirmation. Both the API and a D1 trigger enforce this rule; client code cannot bypass it. Migration `0002_confirmed_inventory.sql` adds this safeguard without deleting or hiding existing catalog data.
