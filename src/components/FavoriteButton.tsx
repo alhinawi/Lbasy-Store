@@ -20,7 +20,7 @@ export function FavoriteButton({ item, className = "" }: { item: ItemSnap; class
       }}
       aria-pressed={active}
       aria-label={d.favorites}
-      className={`grid h-9 w-9 place-items-center rounded-full bg-cream/90 shadow-sm backdrop-blur transition active:scale-90 ${className}`}
+      className={`grid h-9 w-9 place-items-center rounded-full bg-cream/90 shadow-sm backdrop-blur ${className}`}
     >
       <Heart className={`h-[18px] w-[18px] transition ${active ? "fill-clay text-clay" : "text-ink"}`} />
     </button>

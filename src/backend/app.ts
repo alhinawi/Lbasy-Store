@@ -99,6 +99,23 @@ async function newSession(c: Context<Env>, userId: string) {
     maxAge: 30 * 86400,
   });
 }
+app.get("/catalog/images", async (c) => {
+  const ids = (c.req.query("ids") || "").split(",").filter(Boolean);
+  if (!ids.length || ids.length > 40 || ids.some((id) => id.length > 120))
+    return c.json({ error: "invalid" }, 400);
+  const r = await db(c)
+    .prepare(
+      `SELECT id,data FROM products WHERE published=1 AND id IN (${ids.map(() => "?").join(",")})`,
+    )
+    .bind(...ids)
+    .all<{ id: string; data: string }>();
+  return c.json({
+    items: r.results.map((x) => ({
+      id: x.id,
+      images: (JSON.parse(x.data) as Product).images,
+    })),
+  });
+});
 app.get("/auth/me", (c) =>
   c.json({
     user: c.get("user"),
