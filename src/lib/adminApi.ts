@@ -36,6 +36,7 @@ export const adminApi = {
  async signOut(){await Promise.all([api('/auth/logout','POST'),fetch('/api/admin/session',{method:'DELETE'})]);},
  async products():Promise<Product[]>{return (await api<{items:Product[]}>('/admin/products')).items;},
  async saveProduct(p:Product & {published?:boolean}){await api('/admin/products','PUT',p);},
+ async confirmInventory(id:string,revision:number,confirmed:boolean){await api('/admin/products/'+id+'/inventory','PATCH',{revision,confirmed});},
  async deleteProduct(_id:string){void _id;throw new Error('Data deletion needs the owner decision. Unpublish the product instead.');},
  async uploadImage(file:File,_folder:string):Promise<string>{void _folder;const blob=await resizeImage(file,1200,.78);if(blob.size>180000)throw new Error('Photo is too large. Choose a smaller photo (under 180 KB after resize).');return blobToDataUrl(blob);},
  async orders():Promise<Order[]>{return (await api<{items:Order[]}>('/admin/orders')).items;},

@@ -94,6 +94,7 @@ export function CheckoutForm({ zones }: { zones: ShippingZone[] }) {
         setMsg(d.soldWhileShopping);
         return;
       }
+      if(data.error==='inventory_unconfirmed'){setMsg(lang==='ar'?'المتجر لسه بيأكد توفر القطع دي. كلمنا على واتساب قبل الطلب.':'The store still needs to confirm these pieces. Contact us on WhatsApp before ordering.');return;}
       if (!res.ok) throw new Error(data.error);
       const order = data.order as Order;
       rememberOrder(order);
