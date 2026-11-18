@@ -1,7 +1,7 @@
 export const site = {
   name_ar: "لباسي",
   name_en: "Lbasy",
-  url: (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, ""),
+  url: (process.env.NEXT_PUBLIC_SITE_URL || "https://lbasy.pages.dev").replace(/\/$/, ""),
   // Egyptian number in international format without + (e.g. 201012345678). Uses the current store contact by default.
   whatsapp: (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "201028928248").replace(/\D/g, ""),
   instagram: process.env.NEXT_PUBLIC_INSTAGRAM_URL || "",
