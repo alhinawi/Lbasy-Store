@@ -13,7 +13,11 @@ export type Category =
   | "hoodies"
   | "dresses"
   | "shoes"
-  | "bags";
+  | "bags"
+  | "accessories"
+  | "skirts"
+  | "shorts"
+  | "sets";
 
 export type Condition = "like_new" | "very_good" | "good";
 
