@@ -27,7 +27,6 @@ export const viewport: Viewport = {
 export async function generateMetadata({ params }: LayoutProps<"/[lang]">): Promise<Metadata> {
   const { lang } = await params;
   const ar = lang !== "en";
-  const activeTheme = await getStoreTheme();
   const name = ar ? site.name_ar : site.name_en;
   const title = ar ? "لباسي | بالة بورسعيد أونلاين - براندات أجنبية مستعملة" : "Lbasy | Port Said bala online - pre-loved foreign brands";
   const description = t(ar ? "ar" : "en").heroText;
@@ -46,9 +45,9 @@ export async function generateMetadata({ params }: LayoutProps<"/[lang]">): Prom
       locale: ar ? "ar_EG" : "en_US",
       title,
       description,
-      images: [{ url: `/brand/og-${activeTheme}${activeTheme === 'B20' ? '-woman' : ''}.png`, width: 1200, height: 630, alt: name }],
+      images: [{ url: "/brand/og-B20-woman.png", width: 1200, height: 630, alt: name }],
     },
-    twitter: { card: "summary_large_image", title, description, images: [`/brand/og-${activeTheme}${activeTheme === 'B20' ? '-woman' : ''}.png`] },
+    twitter: { card: "summary_large_image", title, description, images: ["/brand/og-B20-woman.png"] },
     icons: { icon: "/icon.svg", apple: "/brand/apple-icon.png" },
     manifest: "/manifest.webmanifest",
   };
