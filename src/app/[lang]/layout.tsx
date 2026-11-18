@@ -46,9 +46,9 @@ export async function generateMetadata({ params }: LayoutProps<"/[lang]">): Prom
       locale: ar ? "ar_EG" : "en_US",
       title,
       description,
-      images: [{ url: `/brand/og-${activeTheme}.png`, width: 1200, height: 630, alt: name }],
+      images: [{ url: `/brand/og-${activeTheme}${activeTheme === 'B20' ? '-woman' : ''}.png`, width: 1200, height: 630, alt: name }],
     },
-    twitter: { card: "summary_large_image", title, description, images: [`/brand/og-${activeTheme}.png`] },
+    twitter: { card: "summary_large_image", title, description, images: [`/brand/og-${activeTheme}${activeTheme === 'B20' ? '-woman' : ''}.png`] },
     icons: { icon: "/icon.svg", apple: "/brand/apple-icon.png" },
     manifest: "/manifest.webmanifest",
   };

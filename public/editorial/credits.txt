@@ -1,1 +1,6 @@
-All current editorial and product images are original AI-generated illustrations. They do not depict actual stock or actual product condition. The sample catalog, prices, sizes and measurements are for testing the store experience, not real offers.
+Except for woman.webp (also served at the legacy man.webp URL), editorial and product images are original AI-generated illustrations. They do not depict actual stock or actual product condition. The sample catalog, prices, sizes and measurements are for testing the store experience, not real offers.
+
+woman.webp: Photo by amin naderloei on Unsplash.
+Source: https://unsplash.com/photos/woman-wearing-a-headscarf-and-coat-outdoors-9QgQ3ptPosA
+License: https://unsplash.com/license (free commercial use).
+Downloaded November 18, 2026. Cropped and resized for the editorial campaign. Also incorporated into hero-wide.webp, og-B20.png, og-B20-woman.png, and the B03/B20 theme previews. This is an editorial stock photograph, not an image of an item offered for sale and not an endorsement by the model.
