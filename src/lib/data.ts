@@ -1,4 +1,5 @@
 import "server-only";
+import { backendEnv } from "../backend/context";
 import { connection } from "next/server";
 import { supabaseConfigured } from "./config";
 import { sampleDrops, sampleProducts, sampleShipping } from "./seed";
@@ -66,17 +67,18 @@ function applyFilters(list: Product[], f: ProductFilters) {
  * With the sample catalog everything is static and prerendered at build time.
  */
 async function live() {
-  if (supabaseConfigured) await connection();
+  await connection();
 }
 
 /** Product slugs to prerender at build time. Empty with Supabase: those pages render on request. */
 export async function getBuildSlugs() {
-  if (supabaseConfigured) return [];
-  return sampleProducts.slice(0, 50).map((p) => p.slug);
+  return [];
 }
 
 async function allProducts(): Promise<Product[]> {
   await live();
+  const {DB} = await backendEnv();
+  if(DB) {const r=await DB.prepare("SELECT data,stock,price FROM products WHERE published=1 LIMIT 2000").all<{data:string;stock:number;price:number}>();return r.results.map(x=>({...JSON.parse(x.data),stock:x.stock,price:x.price}));}
   const sb = serverSupabase();
   if (!sb) return sampleProducts;
   const { data, error } = await sb
@@ -120,11 +122,7 @@ export async function getFacets(base: ProductFilters = {}) {
 }
 
 export async function getProduct(slug: string) {
-  await live();
-  const sb = serverSupabase();
-  if (!sb) return sampleProducts.find((p) => p.slug === slug) ?? null;
-  const { data } = await sb.from("products").select("*").eq("slug", slug).eq("published", true).maybeSingle();
-  return (data as Product) ?? null;
+  return (await allProducts()).find(p=>p.slug===slug)??null;
 }
 
 export async function getSimilar(p: Product, limit = 4) {
@@ -143,6 +141,8 @@ export async function getSimilar(p: Product, limit = 4) {
 export async function getDrops(): Promise<Drop[]> {
   await live();
   const sb = serverSupabase();
+  const {DB} = await backendEnv();
+  if(DB) {const r=await DB.prepare("SELECT data FROM drops WHERE json_extract(data,'$.published')=1").all<{data:string}>();return r.results.map(x=>JSON.parse(x.data));}
   if (!sb) return sampleDrops;
   const { data } = await sb.from("drops").select("*").eq("published", true).order("date", { ascending: false });
   return (data ?? []) as Drop[];
@@ -155,6 +155,8 @@ export async function getDrop(slug: string) {
 export async function getShipping(): Promise<ShippingZone[]> {
   await live();
   const sb = serverSupabase();
+  const {DB} = await backendEnv();
+  if(DB) {const r=await DB.prepare("SELECT data FROM shipping WHERE json_extract(data,'$.active')=1").all<{data:string}>();return r.results.map(x=>JSON.parse(x.data));}
   if (!sb) return sampleShipping;
   const { data } = await sb.from("shipping_zones").select("*").eq("active", true).order("fee");
   return (data ?? []) as ShippingZone[];

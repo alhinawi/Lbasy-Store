@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { CheckCircle2, MessageCircle } from "lucide-react";
+import { useAccount } from "@/lib/account";
 import { useLang } from "./LangProvider";
 import { ProductImage } from "./ProductImage";
 import { useHydrated, useShop } from "@/lib/store";
@@ -12,10 +13,11 @@ import { sampleShipping } from "@/lib/seed";
 export function OrderConfirmation({ number }: { number: string }) {
   const { lang, d } = useLang();
   const hydrated = useHydrated();
+  const {user,loading}=useAccount();
   const order = useShop((s) => s.lastOrders.find((o) => o.number === number));
 
-  if (!hydrated) return <div className="container-x min-h-[50vh]" />;
-  if (!order)
+  if (!hydrated||loading) return <div className="container-x min-h-[50vh]" />;
+  if (!user || !order)
     return (
       <div className="container-x flex min-h-[50vh] flex-col items-center justify-center text-center">
         <p className="text-muted">{d.noOrder}</p>

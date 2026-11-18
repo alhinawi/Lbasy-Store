@@ -49,3 +49,8 @@ next-env.d.ts
 
 # cloudflare pages output
 /dist
+
+# Local additive catalog imports and browser reports
+/.local
+/test-results
+/playwright-report
