@@ -68,17 +68,17 @@ export function BuyBox({ item, sold }: { item: ItemSnap; sold: boolean }) {
 
       {/* Sticky bar on mobile */}
       {!sold && (
-        <div className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-paper/95 px-4 py-3 backdrop-blur md:hidden">
-          <div className="flex items-center gap-3">
+        <div className="fixed inset-x-0 bottom-0 z-30 max-w-full border-t border-line bg-paper/95 px-4 py-3 backdrop-blur md:hidden">
+          <div className="mx-auto flex w-full min-w-0 max-w-full items-center gap-3">
             <div className="min-w-0 flex-1">
               <p className="truncate text-xs text-muted">{item.brand} · {item.size}</p>
               <p className="font-bold">{formatPrice(item.price, lang)}</p>
             </div>
             {showInCart ? (
-              <Link href={href(lang, "/cart")} className="btn-primary">{d.goToCart}</Link>
+              <Link href={href(lang, "/cart")} className="btn-primary max-w-[60%] shrink-0 whitespace-normal text-center">{d.goToCart}</Link>
             ) : (
               <button
-                className="btn-clay"
+                className="btn-clay max-w-[60%] shrink-0 whitespace-normal text-center"
                 onClick={() => {
                   add(item);
                   toast(d.addedToCart, href(lang, "/cart"), d.goToCart);
