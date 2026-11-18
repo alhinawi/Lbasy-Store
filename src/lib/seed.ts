@@ -1,11 +1,6 @@
-// SAMPLE DATA: used when Supabase is not connected, and as the seed for supabase/seed.sql.
+// SAMPLE DATA: used by the unconnected storefront, demo admin and backend seed generator.
 // Every product here is a demo piece so the store looks complete before real stock is added.
-import type { Drop, Product, ShippingZone } from "./types";
-
-const img = (slug: string) => {
-  const file = /501|jeans|denim/.test(slug) ? "jeans" : /hoodie/.test(slug) ? "hoodie" : /tee|shirt|polo/.test(slug) ? "tee" : /converse|martens|sneaker|balance|air|shoe/.test(slug) ? "sneaker" : /tote|bag/.test(slug) ? "bag" : /leather/.test(slug) ? "leather" : /knit|merino|sweater|sweat/.test(slug) ? "sweat" : "rack";
-  return [`/editorial/${file}.webp`];
-};
+import type { Drop, ShippingZone } from "./types";
 
 export const sampleDrops: Drop[] = [
   {
@@ -15,7 +10,7 @@ export const sampleDrops: Drop[] = [
     subtitle_ar: "جواكت وتريكوهات شتوي لسه واصلين من بورسعيد",
     subtitle_en: "Winter jackets and knits, fresh from Port Said",
     date: "2026-11-12",
-    cover: "/editorial/coatman.webp",
+    cover: "/catalog/9968422.webp",
     published: true,
   },
   {
@@ -25,7 +20,7 @@ export const sampleDrops: Drop[] = [
     subtitle_ar: "جينزات أصلية وكوتشيات متنقية واحدة واحدة",
     subtitle_en: "Original denim and hand-picked sneakers",
     date: "2026-10-29",
-    cover: "/editorial/jeans.webp",
+    cover: "/catalog/1082526.webp",
     published: true,
   },
   {
@@ -35,229 +30,13 @@ export const sampleDrops: Drop[] = [
     subtitle_ar: "فساتين وقمصان خفيفة بأسعار ماتتفوتش",
     subtitle_en: "Light dresses and shirts at prices you won't skip",
     date: "2026-10-15",
-    cover: "/editorial/rack.webp",
+    cover: "/catalog/35568689.webp",
     published: true,
   },
 ];
 
-const baseProducts: Product[] = [
-  {
-    id: "p01", slug: "carhartt-detroit-jacket-brown", name_ar: "جاكيت شغل كانڤاس بني", name_en: "Brown canvas work jacket",
-    brand: "Carhartt", gender: "men", category: "jackets", size: "L",
-    measurements: { chest: 62, length: 70, shoulder: 52, sleeve: 63 }, condition: "good",
-    material_ar: "قطن كانڤاس تقيل", material_en: "Heavy cotton duck canvas", color_ar: "بني", color_en: "Brown",
-    notes_ar: "فيه بهتان خفيف على الأكمام وده طبيعي في الكانڤاس، ومفيش أي قطع.", notes_en: "Light natural fading on the sleeves, no tears.",
-    price: 1450, compare_at_price: 1900, stock: 1, images: img("carhartt-jacket"), drop_slug: "nov-2026-port-said", featured: true, created_at: "2026-11-12T10:00:00Z",
-  },
-  {
-    id: "p02", slug: "barbour-wax-jacket-olive", name_ar: "جاكيت واكس زيتي", name_en: "Olive waxed field jacket",
-    brand: "Barbour", gender: "men", category: "jackets", size: "XL",
-    measurements: { chest: 64, length: 78, shoulder: 53, sleeve: 65 }, condition: "good",
-    material_ar: "قطن مشمّع وياقة قطيفة", material_en: "Waxed cotton, corduroy collar", color_ar: "زيتي", color_en: "Olive",
-    notes_ar: "محتاج إعادة شمع خفيفة عند الكوع، والسحاب شغال تمام.", notes_en: "Could use a light re-wax at the elbows, zip works perfectly.",
-    price: 1900, compare_at_price: null, stock: 1, images: img("barbour-wax"), drop_slug: "nov-2026-port-said", featured: true, created_at: "2026-11-12T09:50:00Z",
-  },
-  {
-    id: "p03", slug: "north-face-fleece-black-women", name_ar: "جاكيت فليس أسود حريمي", name_en: "Women's black fleece jacket",
-    brand: "The North Face", gender: "women", category: "jackets", size: "M",
-    measurements: { chest: 52, length: 64, shoulder: 41, sleeve: 60 }, condition: "very_good",
-    material_ar: "بوليستر فليس", material_en: "Polyester fleece", color_ar: "أسود", color_en: "Black",
-    notes_ar: null, notes_en: null,
-    price: 1200, compare_at_price: 1500, stock: 1, images: img("tnf-fleece"), drop_slug: "nov-2026-port-said", featured: true, created_at: "2026-11-12T09:40:00Z",
-  },
-  {
-    id: "p04", slug: "zara-wool-coat-camel", name_ar: "بالطو صوف كامل", name_en: "Camel wool-blend coat",
-    brand: "Zara", gender: "women", category: "coats", size: "S",
-    measurements: { chest: 50, length: 104, shoulder: 40, sleeve: 59 }, condition: "like_new",
-    material_ar: "صوف مخلوط ببوليستر", material_en: "Wool blend", color_ar: "كامل", color_en: "Camel",
-    notes_ar: "زي الجديد، لسه الخيط بتاع الجيوب اللي ورا ماتفكّش.", notes_en: "Like new, the back vent stitch is still intact.",
-    price: 1100, compare_at_price: 1600, stock: 1, images: img("zara-coat"), drop_slug: "nov-2026-port-said", featured: true, created_at: "2026-11-12T09:30:00Z",
-  },
-  {
-    id: "p05", slug: "columbia-kids-puffer-red", name_ar: "جاكيت بافر أحمر أطفال", name_en: "Kids' red puffer jacket",
-    brand: "Columbia", gender: "kids", category: "jackets", size: "10-12Y",
-    measurements: { chest: 46, length: 56, sleeve: 52 }, condition: "very_good",
-    material_ar: "نايلون مبطّن بحشو صناعي", material_en: "Nylon with synthetic fill", color_ar: "أحمر", color_en: "Red",
-    notes_ar: null, notes_en: null,
-    price: 550, compare_at_price: null, stock: 1, images: img("columbia-kids-puffer"), drop_slug: "nov-2026-port-said", created_at: "2026-11-12T09:20:00Z",
-  },
-  {
-    id: "p06", slug: "ms-cable-knit-sweater-cream", name_ar: "تريكو ضفاير كريمي", name_en: "Cream cable-knit sweater",
-    brand: "Marks & Spencer", gender: "women", category: "knitwear", size: "L",
-    measurements: { chest: 56, length: 62, sleeve: 58 }, condition: "very_good",
-    material_ar: "اكريلك وصوف", material_en: "Acrylic and wool", color_ar: "كريمي", color_en: "Cream",
-    notes_ar: null, notes_en: null,
-    price: 420, compare_at_price: null, stock: 1, images: img("ms-cable-knit"), drop_slug: "nov-2026-port-said", created_at: "2026-11-12T09:10:00Z",
-  },
-  {
-    id: "p07", slug: "uniqlo-merino-crew-grey", name_ar: "تريكو ميرينو رمادي", name_en: "Grey merino crew sweater",
-    brand: "Uniqlo", gender: "men", category: "knitwear", size: "M",
-    measurements: { chest: 53, length: 68, shoulder: 45, sleeve: 62 }, condition: "like_new",
-    material_ar: "صوف ميرينو 100%", material_en: "100% merino wool", color_ar: "رمادي", color_en: "Grey",
-    notes_ar: null, notes_en: null,
-    price: 390, compare_at_price: 520, stock: 1, images: img("uniqlo-merino"), drop_slug: "nov-2026-port-said", created_at: "2026-11-12T09:00:00Z",
-  },
-  {
-    id: "p08", slug: "champion-hoodie-grey", name_ar: "هودي رمادي تقيل", name_en: "Heavyweight grey hoodie",
-    brand: "Champion", gender: "men", category: "hoodies", size: "L",
-    measurements: { chest: 60, length: 71, sleeve: 64 }, condition: "good",
-    material_ar: "قطن وبوليستر من جوه موبر", material_en: "Cotton-poly, brushed inside", color_ar: "رمادي", color_en: "Grey",
-    notes_ar: "شوية وبر صغير تحت الدراع.", notes_en: "Slight pilling under the arms.",
-    price: 480, compare_at_price: null, stock: 1, images: img("champion-hoodie"), drop_slug: "nov-2026-port-said", created_at: "2026-11-12T08:50:00Z",
-  },
-  {
-    id: "p09", slug: "adidas-90s-track-jacket-navy", name_ar: "تراك جاكيت فينتج كحلي", name_en: "Vintage 90s navy track jacket",
-    brand: "Adidas", gender: "men", category: "jackets", size: "M",
-    measurements: { chest: 57, length: 68, shoulder: 48, sleeve: 61 }, condition: "very_good",
-    material_ar: "بوليستر تريكوت", material_en: "Polyester tricot", color_ar: "كحلي وأبيض", color_en: "Navy and white",
-    notes_ar: "قطعة من التسعينات، نادر تلاقيها بالحالة دي.", notes_en: "A true 90s piece, rare in this condition.",
-    price: 750, compare_at_price: null, stock: 1, images: img("adidas-track"), drop_slug: "nov-2026-port-said", featured: true, created_at: "2026-11-12T08:40:00Z",
-  },
-  {
-    id: "p10", slug: "next-kids-cardigan-mustard", name_ar: "كارديجان تريكو مسطردة أطفال", name_en: "Kids' mustard knit cardigan",
-    brand: "Next", gender: "kids", category: "knitwear", size: "3-4Y",
-    measurements: { chest: 33, length: 38, sleeve: 33 }, condition: "like_new",
-    material_ar: "قطن 100%", material_en: "100% cotton", color_ar: "مسطردة", color_en: "Mustard",
-    notes_ar: null, notes_en: null,
-    price: 220, compare_at_price: null, stock: 0, images: img("next-kids-cardigan"), drop_slug: "nov-2026-port-said", created_at: "2026-11-12T08:30:00Z",
-  },
-  {
-    id: "p11", slug: "timberland-boots-wheat", name_ar: "بوت نوبك عسلي", name_en: "Wheat nubuck work boots",
-    brand: "Timberland", gender: "men", category: "shoes", size: "44",
-    measurements: { insole: 28.5 }, condition: "good",
-    material_ar: "جلد نوبك طبيعي", material_en: "Genuine nubuck leather", color_ar: "عسلي", color_en: "Wheat",
-    notes_ar: "فيه خدش خفيف على البوز، والنعل لسه عايش كتير.", notes_en: "Light scuffs on the toe, plenty of sole life left.",
-    price: 1700, compare_at_price: 2300, stock: 1, images: img("timberland-boots"), drop_slug: "nov-2026-port-said", created_at: "2026-11-12T08:20:00Z",
-  },
-  {
-    id: "p12", slug: "dr-martens-1460-cherry", name_ar: "بوت جلد أحمر برقبة", name_en: "Cherry red leather 8-eye boots",
-    brand: "Dr. Martens", gender: "unisex", category: "shoes", size: "41",
-    measurements: { insole: 26.5 }, condition: "very_good",
-    material_ar: "جلد طبيعي سموز", material_en: "Smooth genuine leather", color_ar: "أحمر شيري", color_en: "Cherry red",
-    notes_ar: "اتلبس شوية فالجلد طري ومريح من أول يوم.", notes_en: "Already broken in, so it's comfy from day one.",
-    price: 2200, compare_at_price: 2800, stock: 1, images: img("docmartens-1460"), drop_slug: "oct-2026-denim", featured: true, created_at: "2026-10-29T12:00:00Z",
-  },
-  {
-    id: "p13", slug: "levis-501-mid-blue", name_ar: "جينز ٥٠١ أزرق متوسط", name_en: "501 jeans, mid blue",
-    brand: "Levi's", gender: "men", category: "jeans", size: "W32 L32",
-    measurements: { waist: 82, hips: 104, inseam: 81, length: 106 }, condition: "very_good",
-    material_ar: "دينيم قطن 100%", material_en: "100% cotton denim", color_ar: "أزرق متوسط", color_en: "Mid blue",
-    notes_ar: null, notes_en: null,
-    price: 650, compare_at_price: 900, stock: 1, images: img("levis-501"), drop_slug: "oct-2026-denim", featured: true, created_at: "2026-10-29T11:50:00Z",
-  },
-  {
-    id: "p14", slug: "calvin-klein-mom-jeans-light", name_ar: "موم جينز فاتح حريمي", name_en: "Women's light-wash mom jeans",
-    brand: "Calvin Klein", gender: "women", category: "jeans", size: "W28",
-    measurements: { waist: 72, hips: 98, inseam: 70, length: 98 }, condition: "very_good",
-    material_ar: "دينيم قطن", material_en: "Cotton denim", color_ar: "أزرق فاتح", color_en: "Light blue",
-    notes_ar: null, notes_en: null,
-    price: 600, compare_at_price: null, stock: 1, images: img("ck-mom-jeans"), drop_slug: "oct-2026-denim", created_at: "2026-10-29T11:40:00Z",
-  },
-  {
-    id: "p15", slug: "dickies-874-khaki", name_ar: "بنطلون شغل كاكي", name_en: "Khaki work trousers",
-    brand: "Dickies", gender: "men", category: "pants", size: "W34",
-    measurements: { waist: 86, hips: 106, inseam: 80, length: 105 }, condition: "very_good",
-    material_ar: "بوليستر وقطن", material_en: "Poly-cotton twill", color_ar: "كاكي", color_en: "Khaki",
-    notes_ar: null, notes_en: null,
-    price: 520, compare_at_price: null, stock: 1, images: img("dickies-874"), drop_slug: "oct-2026-denim", created_at: "2026-10-29T11:30:00Z",
-  },
-  {
-    id: "p16", slug: "nike-air-max-90-white", name_ar: "كوتشي رنر أبيض في رمادي", name_en: "White and grey retro runners",
-    brand: "Nike", gender: "men", category: "shoes", size: "43",
-    measurements: { insole: 27.5 }, condition: "good",
-    material_ar: "جلد وشبك", material_en: "Leather and mesh", color_ar: "أبيض ورمادي", color_en: "White and grey",
-    notes_ar: "اتغسل واتنضف، بس النعل فيه اصفرار بسيط.", notes_en: "Cleaned, slight yellowing on the sole.",
-    price: 1350, compare_at_price: null, stock: 1, images: img("airmax-90"), drop_slug: "oct-2026-denim", created_at: "2026-10-29T11:20:00Z",
-  },
-  {
-    id: "p17", slug: "converse-high-black", name_ar: "كوتشي كانڤاس هاي أسود", name_en: "Black canvas high-tops",
-    brand: "Converse", gender: "unisex", category: "shoes", size: "38",
-    measurements: { insole: 24.5 }, condition: "good",
-    material_ar: "كانڤاس ومطاط", material_en: "Canvas and rubber", color_ar: "أسود", color_en: "Black",
-    notes_ar: null, notes_en: null,
-    price: 600, compare_at_price: null, stock: 0, images: img("converse-hi"), drop_slug: "oct-2026-denim", created_at: "2026-10-29T11:10:00Z",
-  },
-  {
-    id: "p18", slug: "puma-women-runners-grey-pink", name_ar: "كوتشي جري حريمي رمادي في بمبة", name_en: "Women's grey and pink runners",
-    brand: "Puma", gender: "women", category: "shoes", size: "39",
-    measurements: { insole: 25 }, condition: "like_new",
-    material_ar: "شبك خفيف", material_en: "Light mesh", color_ar: "رمادي وبمبة", color_en: "Grey and pink",
-    notes_ar: "ماتلبسش غير مرة أو اتنين.", notes_en: "Worn once or twice.",
-    price: 800, compare_at_price: 1100, stock: 1, images: img("puma-runner"), drop_slug: "oct-2026-denim", created_at: "2026-10-29T11:00:00Z",
-  },
-  {
-    id: "p19", slug: "gap-kids-denim-jacket", name_ar: "جاكيت جينز أطفال", name_en: "Kids' denim jacket",
-    brand: "Gap", gender: "kids", category: "jackets", size: "6-7Y",
-    measurements: { chest: 38, length: 44, sleeve: 42 }, condition: "like_new",
-    material_ar: "دينيم قطن", material_en: "Cotton denim", color_ar: "أزرق", color_en: "Blue",
-    notes_ar: null, notes_en: null,
-    price: 320, compare_at_price: null, stock: 1, images: img("gap-kids-denim"), drop_slug: "oct-2026-denim", created_at: "2026-10-29T10:50:00Z",
-  },
-  {
-    id: "p20", slug: "michael-kors-leather-tote", name_ar: "شنطة توت جلد كونياك", name_en: "Cognac leather tote",
-    brand: "Michael Kors", gender: "women", category: "bags", size: "واحد",
-    measurements: { width: 36, height: 28, depth: 13 }, condition: "very_good",
-    material_ar: "جلد طبيعي محبب", material_en: "Pebbled genuine leather", color_ar: "كونياك", color_en: "Cognac",
-    notes_ar: "البطانة من جوه نضيفة، والأركان فيها لمعة خفيفة من الاستعمال.", notes_en: "Clean lining, light wear on the corners.",
-    price: 1300, compare_at_price: 1750, stock: 1, images: img("mk-tote"), drop_slug: "oct-2026-summer-end", featured: true, created_at: "2026-10-15T12:00:00Z",
-  },
-  {
-    id: "p21", slug: "massimo-dutti-crossbody-black", name_ar: "شنطة كروس جلد سودا", name_en: "Black leather crossbody bag",
-    brand: "Massimo Dutti", gender: "women", category: "bags", size: "واحد",
-    measurements: { width: 22, height: 16, depth: 6 }, condition: "good",
-    material_ar: "جلد طبيعي", material_en: "Genuine leather", color_ar: "أسود", color_en: "Black",
-    notes_ar: null, notes_en: null,
-    price: 900, compare_at_price: null, stock: 1, images: img("md-crossbody"), drop_slug: "oct-2026-summer-end", created_at: "2026-10-15T11:50:00Z",
-  },
-  {
-    id: "p22", slug: "hm-floral-midi-dress-green", name_ar: "فستان ميدي ورد أخضر", name_en: "Green floral midi dress",
-    brand: "H&M", gender: "women", category: "dresses", size: "M",
-    measurements: { chest: 47, waist: 38, length: 118 }, condition: "like_new",
-    material_ar: "فيسكوز خفيف", material_en: "Light viscose", color_ar: "أخضر غامق بورد", color_en: "Dark green floral",
-    notes_ar: null, notes_en: null,
-    price: 380, compare_at_price: null, stock: 1, images: img("hm-floral-dress"), drop_slug: "oct-2026-summer-end", created_at: "2026-10-15T11:40:00Z",
-  },
-  {
-    id: "p23", slug: "mango-linen-dress-beige", name_ar: "فستان كتان بيج", name_en: "Beige linen dress",
-    brand: "Mango", gender: "women", category: "dresses", size: "S",
-    measurements: { chest: 44, waist: 36, length: 112 }, condition: "very_good",
-    material_ar: "كتان 100%", material_en: "100% linen", color_ar: "بيج", color_en: "Beige",
-    notes_ar: null, notes_en: null,
-    price: 450, compare_at_price: 600, stock: 1, images: img("mango-linen-dress"), drop_slug: "oct-2026-summer-end", created_at: "2026-10-15T11:30:00Z",
-  },
-  {
-    id: "p24", slug: "other-stories-silk-blouse-ivory", name_ar: "بلوزة حرير أوف وايت", name_en: "Ivory silk blouse",
-    brand: "& Other Stories", gender: "women", category: "shirts", size: "S",
-    measurements: { chest: 49, length: 66, sleeve: 58 }, condition: "very_good",
-    material_ar: "حرير طبيعي", material_en: "Silk", color_ar: "أوف وايت", color_en: "Ivory",
-    notes_ar: null, notes_en: null,
-    price: 520, compare_at_price: null, stock: 1, images: img("stories-silk-blouse"), drop_slug: "oct-2026-summer-end", created_at: "2026-10-15T11:20:00Z",
-  },
-  {
-    id: "p25", slug: "tommy-hilfiger-oxford-blue", name_ar: "قميص أكسفورد لبني", name_en: "Light blue oxford shirt",
-    brand: "Tommy Hilfiger", gender: "men", category: "shirts", size: "M",
-    measurements: { chest: 55, length: 76, shoulder: 46, sleeve: 64 }, condition: "like_new",
-    material_ar: "قطن أكسفورد", material_en: "Cotton oxford", color_ar: "لبني", color_en: "Light blue",
-    notes_ar: null, notes_en: null,
-    price: 480, compare_at_price: 650, stock: 1, images: img("tommy-oxford"), drop_slug: "oct-2026-summer-end", created_at: "2026-10-15T11:10:00Z",
-  },
-  {
-    id: "p26", slug: "ralph-lauren-polo-navy", name_ar: "بولو كحلي", name_en: "Navy pique polo",
-    brand: "Ralph Lauren", gender: "men", category: "tshirts", size: "L",
-    measurements: { chest: 56, length: 74, shoulder: 47 }, condition: "very_good",
-    material_ar: "قطن بيكيه", material_en: "Cotton pique", color_ar: "كحلي", color_en: "Navy",
-    notes_ar: null, notes_en: null,
-    price: 420, compare_at_price: null, stock: 0, images: img("rl-polo"), drop_slug: "oct-2026-summer-end", created_at: "2026-10-15T11:00:00Z",
-  },
-];
-
-// Sample fees in EGP. Edit them from the admin (Shipping page).
-const aiEdit = [["بليزر أسود", "Black blazer", "jackets", "men", 449], ["قميص كاروهات", "Checked overshirt", "shirts", "men", 249], ["جاكيت ليذر أسود", "Black biker jacket", "jackets", "men", 599], ["تريكو ضفاير كريمي", "Cream cable-knit", "knitwear", "women", 279], ["هودي رمادي", "Grey hoodie", "hoodies", "unisex", 299], ["كارديجان كراميل", "Camel cardigan", "knitwear", "women", 329], ["تريكو كحلي", "Navy crewneck", "knitwear", "men", 249], ["سويت شيرت أبيض", "White sweatshirt", "hoodies", "unisex", 229], ["تريكو مخطط", "Striped knit", "knitwear", "men", 279], ["جينز أزرق مستقيم", "Straight blue jeans", "jeans", "men", 349], ["تي شيرت أسود", "Black T-shirt", "tshirts", "unisex", 149], ["تي شيرت أبيض", "White T-shirt", "tshirts", "unisex", 149], ["بنطلون رمادي واسع", "Charcoal trousers", "pants", "men", 299], ["جاكيت فيلد زيتي", "Olive field jacket", "jackets", "men", 449], ["تريكو بني دافي", "Rust pullover", "knitwear", "men", 249], ["جاكيت جينز", "Denim jacket", "jackets", "unisex", 399], ["سنيكرز أبيض", "White sneakers", "shoes", "unisex", 349], ["شنطة كتف سوداء", "Black shoulder bag", "bags", "women", 249], ["شنطة جلد كراميل", "Tan satchel", "bags", "unisex", 299], ["شوز كلاسيك أسود", "Black dress shoes", "shoes", "men", 399], ["جينز فاتح", "Light blue jeans", "jeans", "women", 329], ["فستان تريكو طويل", "Long knit dress", "dresses", "women", 449], ["ترينش بيج طويل", "Beige trench coat", "coats", "women", 599], ["جيب أسود طويل", "Long black skirt", "pants", "women", 249], ["هودي عنابي", "Burgundy hoodie", "hoodies", "unisex", 299], ["تريكو أخضر غامق", "Forest green knit", "knitwear", "unisex", 279], ["كوتشي كانڤاس كريمي", "Cream canvas shoes", "shoes", "unisex", 249], ["جاكيت بافر أطفال", "Kids padded jacket", "jackets", "kids", 279], ["سويت شيرت أطفال", "Kids cream sweatshirt", "hoodies", "kids", 129], ["بوت بني", "Brown ankle boots", "shoes", "women", 399], ["قميص كتان بيج", "Beige linen shirt", "shirts", "unisex", 229], ["باك باك أسود", "Black backpack", "bags", "unisex", 249]] as const;
-// AI-created sample catalog. These are design examples, not merchant stock or real offers.
-export const sampleProducts: Product[] = Array.from({length:80},(_,i)=>{
- const base=baseProducts[i%baseProducts.length];const [name_ar,name_en,category,baseGender,price]=aiEdit[i%aiEdit.length]; const femaleTee=[42,43,74,75].includes(i); const gender=femaleTee?"women":baseGender; const imageIndex=femaleTee?(i%32===10?33:34):i%32+1;
- return {...base,id:`p${String(i+1).padStart(2,'0')}`,slug:i<baseProducts.length?base.slug:`lbasy-edit-${i+1}`,name_ar,name_en,category,gender,price,compare_at_price:null,brand:"LBASY EDIT",stock:1,size:gender==='kids'?['6-8Y','8-10Y','10-12Y'][i%3]:['S','M','L','XL'][Math.floor(i/16)%4],images:Array.from({length:5},(_,view)=>`/ai/campaign/${String(imageIndex).padStart(2,'0')}-${view+1}.webp`),drop_slug:sampleDrops[Math.floor(i/28)%3].slug,featured:i%5===0,measurements:{},color_ar:"حسب الصورة",color_en:"As pictured",material_ar:"أكد الخامة مع المتجر",material_en:"Confirm with the store",notes_ar:"تأكد من التوفر والسعر والحالة والمقاسات على واتساب قبل اعتماد الطلب.",notes_en:"Confirm availability, price, condition and measurements on WhatsApp before any order is final."};
-});
+// Keep the existing export for storefront, demo admin and backend consumers.
+export { catalogProducts as sampleProducts } from "./catalog";
 
 export const sampleShipping: ShippingZone[] = [
   { code: "PTS", name_ar: "بورسعيد", name_en: "Port Said", fee: 40, days: "1-2", active: true },
