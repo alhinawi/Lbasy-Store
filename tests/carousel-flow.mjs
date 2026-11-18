@@ -3,7 +3,7 @@ const dir=process.env.SCREENSHOT_DIR||'.local/screenshots';fs.mkdirSync(dir,{rec
 try{
  for(let i=0;i<90;i++){try{if((await fetch('http://localhost:3106/shop')).ok)break;}catch{}await new Promise(r=>setTimeout(r,500));}
  for(const lang of ['ar','en']){
-  const ctx=await browser.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true});const page=await ctx.newPage();await page.goto('http://localhost:3106'+(lang==='en'?'/en':'')+'/shop');await page.waitForTimeout(650);
+  const ctx=await browser.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true,reducedMotion:'reduce'});const page=await ctx.newPage();await page.goto('http://localhost:3106'+(lang==='en'?'/en':'')+'/shop');await page.waitForTimeout(650);
   const card=page.locator('.card-carousel').first();const track=card.locator('.card-carousel-track');if(await track.locator('a').count()===1){
    assert.equal(await card.locator('.card-carousel-dots').count(),0);assert.equal(await card.locator('.card-carousel-arrow').count(),0);
    await page.screenshot({path:dir+`/lbasy-current-catalog-${lang}-mobile.png`});
@@ -26,6 +26,6 @@ try{
   for(const width of [360,430]){await page.setViewportSize({width,height:844});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth),width);}
   await ctx.close();
  }
- const page=await browser.newPage({viewport:{width:1440,height:1000}});await page.goto('http://localhost:3106/en/shop');const first=page.locator('.card-carousel').first();await first.hover();if(await first.locator('.card-carousel-slide').count()>1){await first.getByRole('button',{name:'Next photo',exact:true}).click();await page.waitForTimeout(500);assert.equal(await first.getByRole('button',{name:'Photo 2',exact:true}).getAttribute('aria-pressed'),'true');}await page.screenshot({path:dir+'/lbasy-card-carousel-desktop.png'});
- console.log('PASS carousel dots, native touch swipe, no unintended navigation, desktop arrow and mobile page width, Arabic/English');
+ const page=await browser.newPage({viewport:{width:1440,height:1000},reducedMotion:'reduce'});await page.goto('http://localhost:3106/en/shop');const first=page.locator('.card-carousel').first();await first.hover();if(await first.locator('.card-carousel-slide').count()>1){await first.getByRole('button',{name:'Next photo',exact:true}).click();await page.waitForTimeout(500);assert.equal(await first.getByRole('button',{name:'Photo 2',exact:true}).getAttribute('aria-pressed'),'true');}await page.screenshot({path:dir+'/lbasy-card-carousel-desktop.png'});
+ console.log('PASS available-photo behavior in both locales. Multi-photo catalogs run gesture/control assertions; single-photo catalogs verify that no fake controls appear.');
 }finally{await browser.close();child.kill('SIGTERM');await once(child,'close');}
