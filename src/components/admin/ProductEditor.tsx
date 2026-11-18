@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { ArrowRight, ImagePlus, Loader2, Trash2, X, ChevronRight, ChevronLeft } from "lucide-react";
+import { ArrowRight, ImagePlus, Loader2, Archive, X, ChevronRight, ChevronLeft } from "lucide-react";
 import { adminApi } from "@/lib/adminApi";
 import { categories, conditions, dicts, genders } from "@/lib/i18n";
 import type { Category, Drop, MeasureKey, Product } from "@/lib/types";
@@ -20,6 +20,10 @@ const measureSets: Record<Category, MeasureKey[]> = {
   dresses: ["chest", "waist", "length"],
   shoes: ["insole"],
   bags: ["width", "height", "depth"],
+  accessories: ["width", "length"],
+  skirts: ["waist", "hips", "length"],
+  shorts: ["waist", "hips", "inseam", "length"],
+  sets: ["chest", "waist", "length"],
 };
 
 const slugify = (s: string) =>
@@ -127,11 +131,11 @@ export function ProductEditor({ initial, drops, onClose }: { initial: Product | 
     }
   };
 
-  const remove = async () => {
-    if (!confirm("تمسح القطعة دي نهائيًا؟ لو اتباعت الأحسن تسيبها وتخلي الكمية صفر.")) return;
+  const archive = async () => {
+    if (!confirm("تخفي القطعة دي من المتجر؟ هتفضل محفوظة في لوحة الإدارة وتقدر تنشرها تاني.\nHide this piece from the store? It stays saved in admin and can be published again.")) return;
     setBusy(true);
     try {
-      await adminApi.deleteProduct(p.id);
+      await adminApi.saveProduct({ ...p, published: false });
       onClose(true);
     } catch (e) {
       setErr((e as Error).message);
@@ -297,8 +301,8 @@ export function ProductEditor({ initial, drops, onClose }: { initial: Product | 
       <div className="fixed inset-x-0 bottom-[57px] z-20 border-t border-line bg-paper/95 px-4 py-3 backdrop-blur md:bottom-0">
         <div className="mx-auto flex max-w-6xl gap-2">
           {!isNew && (
-            <button onClick={remove} disabled={busy} className="btn-ghost text-clay" aria-label="امسح">
-              <Trash2 className="h-4 w-4" />
+            <button onClick={archive} disabled={busy} className="btn-ghost text-clay" aria-label="إخفاء القطعة / Hide piece" title="إخفاء القطعة / Hide piece">
+              <Archive className="h-4 w-4" />
             </button>
           )}
           <button onClick={() => onClose(false)} className="btn-ghost flex-1">إلغاء</button>
