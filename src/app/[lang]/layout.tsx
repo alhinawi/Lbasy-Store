@@ -6,6 +6,7 @@ import { StoreMotion } from "@/components/StoreMotion";
 
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { getStoreTheme } from "@/lib/themeServer";
+import { AccountSync } from "@/components/AccountSync";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Toast } from "@/components/Toast";
@@ -61,7 +62,7 @@ export default async function LangLayout({ children, params }: LayoutProps<"/[la
     <html lang={lang} dir={lang === "ar" ? "rtl" : "ltr"} className={`${body.variable} ${kufi.variable}`}>
       <body className="min-h-dvh">
         <LangProvider lang={lang}><ThemeProvider initialTheme={theme}><StoreMotion/>
-          <Header />
+          <AccountSync /><Header />
 
           <main>{children}</main>
           <Footer lang={lang} sample={isSampleCatalog()} />

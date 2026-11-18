@@ -45,7 +45,7 @@ export function OrdersPanel() {
   const revenue = (orders ?? []).filter((o) => o.status === "delivered").reduce((s, o) => s + o.subtotal, 0);
 
   const setStatus = async (o: Order, s: OrderStatus) => {
-    if (s === "cancelled" && !confirm("تلغي الطلب؟ القطع هترجع متاحة في المتجر.")) return;
+    if (s === "cancelled" && !confirm("تلغي الطلب؟ القطع مش هترجع متاحة تلقائيًا. راجعها الأول ورجّع المخزون بنفسك لو ينفع.")) return;
     try {
       await adminApi.setOrderStatus(o.id, s);
       load();

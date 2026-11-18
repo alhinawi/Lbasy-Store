@@ -1,24 +1,7 @@
 "use client";
-
-import { browserSupabase } from "./supabase";
-import { demo } from "./demo";
-import { demoAdminPassword, supabaseConfigured } from "./config";
-import type { Drop, Order, OrderStatus, Product, ShippingZone } from "./types";
-
-export const isDemo = !supabaseConfigured;
-const DEMO_SESSION = "lbasy-demo-admin";
-
-function sb() {
-  const c = browserSupabase();
-  if (!c) throw new Error("Supabase not configured");
-  return c;
-}
-
-function check<T>(r: { data: T; error: { message: string } | null }): T {
-  if (r.error) throw new Error(r.error.message);
-  return r.data;
-}
-
+import { api } from './account';
+import type { Drop, Order, OrderStatus, Product, ShippingZone } from './types';
+export const isDemo=false;
 /** Resize a photo in the browser before upload: smaller files, faster store. */
 export async function resizeImage(file: File, maxSide = 1600, quality = 0.82): Promise<Blob> {
   const bitmap = await createImageBitmap(file).catch(() => null);
@@ -42,158 +25,25 @@ const blobToDataUrl = (b: Blob) =>
   });
 
 export const adminApi = {
-  async session(): Promise<string | null> {
-    if (isDemo) {
-      try { const r = await fetch("/api/admin/session", { cache: "no-store" }); const v = await r.json(); if (v.configured) return v.authenticated ? "store-admin" : null; } catch {}
-      return sessionStorage.getItem(DEMO_SESSION) ? "demo@lbasy" : null;
-    }
-    const { data } = await sb().auth.getSession();
-    if (!data.session) return null;
-    const { data: ok } = await sb().rpc("is_admin");
-    return ok ? data.session.user.email ?? "admin" : null;
-  },
-
-  async signIn(email: string, password: string): Promise<"ok" | "bad" | "not_admin"> {
-    if (isDemo) {
-      try {const info = await fetch("/api/admin/session", { cache: "no-store" }).then(r=>r.json()); if(info.configured){const r=await fetch("/api/admin/session",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({password})}); return r.ok ? "ok" : "bad";}} catch {return "bad";}
-      if (password !== demoAdminPassword) return "bad";
-      sessionStorage.setItem(DEMO_SESSION, "1");
-      return "ok";
-    }
-    const { error } = await sb().auth.signInWithPassword({ email, password });
-    if (error) return "bad";
-    const { data: ok } = await sb().rpc("is_admin");
-    if (!ok) {
-      await sb().auth.signOut();
-      return "not_admin";
-    }
-    return "ok";
-  },
-
-  async signOut() {
-    if (isDemo) { sessionStorage.removeItem(DEMO_SESSION); await fetch("/api/admin/session",{method:"DELETE"}); }
-    else await sb().auth.signOut();
-  },
-
-  // Products
-  async products(): Promise<Product[]> {
-    if (isDemo) return demo.get().products;
-    return check(await sb().from("products").select("*").order("created_at", { ascending: false }).limit(5000)) as Product[];
-  },
-
-  async saveProduct(p: Product & { published?: boolean }) {
-    if (isDemo) {
-      demo.update((s) => {
-        const i = s.products.findIndex((x) => x.id === p.id);
-        if (i >= 0) s.products[i] = p;
-        else s.products.unshift(p);
-      });
-      return;
-    }
-    const row = { ...p, updated_at: new Date().toISOString() };
-    check(await sb().from("products").upsert(row));
-  },
-
-  async deleteProduct(id: string) {
-    if (isDemo) {
-      demo.update((s) => {
-        s.products = s.products.filter((p) => p.id !== id);
-      });
-      return;
-    }
-    check(await sb().from("products").delete().eq("id", id));
-  },
-
-  async uploadImage(file: File, folder: string): Promise<string> {
-    if (isDemo) {
-      // Kept small because demo photos live in the browser's storage.
-      return blobToDataUrl(await resizeImage(file, 900, 0.72));
-    }
-    const blob = await resizeImage(file);
-    const path = `${folder}/${crypto.randomUUID()}.webp`;
-    check(await sb().storage.from("products").upload(path, blob, { contentType: "image/webp", cacheControl: "31536000" }));
-    return sb().storage.from("products").getPublicUrl(path).data.publicUrl;
-  },
-
-  // Orders
-  async orders(): Promise<Order[]> {
-    if (isDemo) return demo.get().orders;
-    // Items live in their own table (order_items); PostgREST joins them in as "items".
-    return check(
-      await sb()
-        .from("orders")
-        .select("*, items:order_items(product_id, slug, name_ar, name_en, brand, size, price, image)")
-        .order("created_at", { ascending: false })
-        .limit(1000),
-    ) as unknown as Order[];
-  },
-
-  async setOrderStatus(id: string, status: OrderStatus) {
-    if (isDemo) {
-      demo.update((s) => {
-        const o = s.orders.find((x) => x.id === id);
-        if (!o) return;
-        if (status === "cancelled" && o.status !== "cancelled") {
-          const ids = new Set(o.items.map((i) => i.product_id));
-          s.products = s.products.map((p) => (ids.has(p.id) ? { ...p, stock: p.stock + 1 } : p));
-        }
-        o.status = status;
-      });
-      return;
-    }
-    check(await sb().rpc("admin_set_order_status", { order_id: id, new_status: status }));
-  },
-
-  // Drops
-  async drops(): Promise<Drop[]> {
-    if (isDemo) return demo.get().drops;
-    return check(await sb().from("drops").select("*").order("date", { ascending: false })) as Drop[];
-  },
-
-  async saveDrop(d: Drop, originalSlug?: string) {
-    if (isDemo) {
-      demo.update((s) => {
-        const i = s.drops.findIndex((x) => x.slug === (originalSlug ?? d.slug));
-        if (i >= 0) s.drops[i] = d;
-        else s.drops.unshift(d);
-        if (originalSlug && originalSlug !== d.slug)
-          s.products = s.products.map((p) => (p.drop_slug === originalSlug ? { ...p, drop_slug: d.slug } : p));
-        s.drops.sort((a, b) => b.date.localeCompare(a.date));
-      });
-      return;
-    }
-    if (originalSlug && originalSlug !== d.slug) check(await sb().from("drops").update(d).eq("slug", originalSlug));
-    else check(await sb().from("drops").upsert(d));
-  },
-
-  async deleteDrop(slug: string) {
-    if (isDemo) {
-      demo.update((s) => {
-        s.drops = s.drops.filter((x) => x.slug !== slug);
-        s.products = s.products.map((p) => (p.drop_slug === slug ? { ...p, drop_slug: null } : p));
-      });
-      return;
-    }
-    check(await sb().from("drops").delete().eq("slug", slug));
-  },
-
-  // Shipping
-  async shipping(): Promise<ShippingZone[]> {
-    if (isDemo) return demo.get().shipping;
-    return check(await sb().from("shipping_zones").select("*").order("name_ar")) as ShippingZone[];
-  },
-
-  async saveShipping(zones: ShippingZone[]) {
-    if (isDemo) {
-      demo.update((s) => {
-        s.shipping = zones;
-      });
-      return;
-    }
-    check(await sb().from("shipping_zones").upsert(zones));
-  },
-
-  resetDemo() {
-    demo.reset();
-  },
+ async session():Promise<string|null>{
+  const r=await fetch('/api/admin/session',{cache:'no-store'}).then(r=>r.json());
+  if(r.authenticated)return 'store-admin';
+  const me=await api<{user:{role:string;email:string}|null}>('/auth/me');return me.user?.role==='admin'?me.user.email:null;
+ },
+ async signIn(email:string,password:string):Promise<'ok'|'bad'|'not_admin'>{
+  try{const r=await api<{user:{role:string}}>('/auth/login','POST',{email,password});return r.user.role==='admin'?'ok':'not_admin';}catch{return 'bad';}
+ },
+ async signOut(){await Promise.all([api('/auth/logout','POST'),fetch('/api/admin/session',{method:'DELETE'})]);},
+ async products():Promise<Product[]>{return (await api<{items:Product[]}>('/admin/products')).items;},
+ async saveProduct(p:Product & {published?:boolean}){await api('/admin/products','PUT',p);},
+ async deleteProduct(_id:string){void _id;throw new Error('Data deletion needs the owner decision. Unpublish the product instead.');},
+ async uploadImage(file:File,_folder:string):Promise<string>{void _folder;const blob=await resizeImage(file,1200,.78);if(blob.size>180000)throw new Error('Photo is too large. Choose a smaller photo (under 180 KB after resize).');return blobToDataUrl(blob);},
+ async orders():Promise<Order[]>{return (await api<{items:Order[]}>('/admin/orders')).items;},
+ async setOrderStatus(id:string,status:OrderStatus){await api('/admin/orders/'+id,'PATCH',{status});},
+ async drops():Promise<Drop[]>{return (await api<{items:Drop[]}>('/admin/drops')).items;},
+ async saveDrop(drop:Drop,originalSlug?:string){await api('/admin/drops','PUT',{drop,originalSlug});},
+ async deleteDrop(_slug:string){void _slug;throw new Error('Data deletion needs the owner decision. Unpublish the drop instead.');},
+ async shipping():Promise<ShippingZone[]>{return (await api<{items:ShippingZone[]}>('/admin/shipping')).items;},
+ async saveShipping(zones:ShippingZone[]){await api('/admin/shipping','PUT',zones);},
+ resetDemo(){throw new Error('Live store data cannot be reset.');}
 };
