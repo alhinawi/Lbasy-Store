@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ExternalLink, Layers, Loader2, LogOut, Package, ShoppingCart, Truck } from "lucide-react";
 import { LogoMark } from "../Logo";
@@ -99,7 +100,7 @@ function Login({ onDone }: { onDone: (u: string) => void }) {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
   if (!mode) return <div className="grid min-h-dvh place-items-center"><Loader2 className="animate-spin"/></div>;
-  if (mode.configured) return <PasskeyLogin registered={mode.passkeyRegistered} onDone={onDone}/>;
+  if (mode.configured) return <div><PasskeyLogin registered={mode.passkeyRegistered} onDone={onDone}/><p className="fixed inset-x-0 bottom-5 text-center text-sm"><Link href="/account" className="underline">دخول بحساب المتجر / Store account sign-in</Link></p></div>;
   return (
     <div className="grid min-h-dvh place-items-center px-4">
       <form

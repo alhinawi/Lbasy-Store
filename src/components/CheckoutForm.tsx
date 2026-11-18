@@ -8,10 +8,11 @@ import { useLang } from "./LangProvider";
 import { ProductImage } from "./ProductImage";
 import { useHydrated, useShop } from "@/lib/store";
 import { formatPrice, href, pick } from "@/lib/i18n";
-import { supabaseConfigured } from "@/lib/config";
+import { useAccount } from "@/lib/account";
+import { useRef } from "react";
 import { site, whatsappLink } from "@/lib/config";
 import { isEgyptMobile } from "@/lib/validate";
-import { saveDemoOrder } from "@/lib/demo";
+
 import { paymentProviders } from "@/lib/payments";
 import type { Order, ShippingZone } from "@/lib/types";
 
@@ -29,6 +30,8 @@ type Errors = Partial<Record<"customer_name" | "phone" | "phone2" | "governorate
 
 export function CheckoutForm({ zones }: { zones: ShippingZone[] }) {
   const { lang, d } = useLang();
+  const {user,loading,available}=useAccount();
+  const idempotency=useRef<string>(crypto.randomUUID());
   const router = useRouter();
   const hydrated = useHydrated();
   const cart = useShop((s) => s.cart);
@@ -82,7 +85,7 @@ export function CheckoutForm({ zones }: { zones: ShippingZone[] }) {
     try {
       const res = await fetch("/api/orders", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "Idempotency-Key":idempotency.current },
         body: JSON.stringify({ ...f, item_ids: cart.map((i) => i.id), payment_method: "cod" }),
       });
       const data = await res.json();
@@ -94,7 +97,7 @@ export function CheckoutForm({ zones }: { zones: ShippingZone[] }) {
       if (!res.ok) throw new Error(data.error);
       const order = data.order as Order;
       rememberOrder(order);
-      if (data.demo) saveDemoOrder(order);
+
       clearCart();
       router.push(`${href(lang, `/order/${order.number}`)}`);
     } catch {
@@ -114,7 +117,9 @@ export function CheckoutForm({ zones }: { zones: ShippingZone[] }) {
       </div>
     );
 
-  if (!supabaseConfigured) return <section className="container-x py-12 min-h-[50vh]"><h1 className="h-display text-3xl">{lang==="ar"?"أكد لُقطتك معانا":"Confirm your find"}</h1><p className="my-5 max-w-xl text-sm leading-8">{lang==="ar"?"ابعت اختياراتك على واتساب. هنأكدلك التوفر والسعر والحالة والمقاسات وتكلفة الشحن قبل اعتماد أي طلب. إضافة القطعة للسلة مش حجز، ومفيش أي دفع أونلاين هنا.":"Send your choices on WhatsApp. We will confirm availability, price, condition, measurements and shipping before any order is final. Adding an item to the bag does not reserve it. No online payment is taken here."}</p><a className="btn-wa" href={whatsappLink(waText())} target="_blank" rel="noopener"><MessageCircle size={18}/>{lang==="ar"?"تأكيد التوفر على واتساب":"Check availability on WhatsApp"}</a></section>;
+  if(loading) return <div className="container-x py-12" role="status">{lang==='ar'?'لحظة...':'Loading...'}</div>;
+  if(!available) return <section className="container-x py-12"><h1 className="h-display text-3xl">{lang==='ar'?'الطلبات لسه بتتجهز':'Orders are being connected'}</h1><a className="btn-wa mt-6" href={whatsappLink(waText())}>{lang==='ar'?'كلمنا على واتساب':'Contact us on WhatsApp'}</a></section>;
+  if(!user) return <section className="container-x py-12"><h1 className="h-display text-3xl">{lang==='ar'?'ادخل حسابك عشان تكمّل الطلب':'Sign in to place your order'}</h1><p className="my-5">{lang==='ar'?'هنحفظ شنطتك وطلباتك في حسابك. الدفع عند الاستلام.':'Your bag and orders stay in your account. Cash on delivery.'}</p><Link href={href(lang,'/account')} className="btn-primary">{lang==='ar'?'دخول / حساب جديد':'Sign in / Create account'}</Link></section>;
 
   return (
     <form onSubmit={submit} noValidate className="container-x pb-10 pt-6">

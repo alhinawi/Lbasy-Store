@@ -1,3 +1,5 @@
+import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
+void initOpenNextCloudflareForDev();
 import type { NextConfig } from "next";
 
 const supabaseHost = (() => {
@@ -11,6 +13,7 @@ const supabaseHost = (() => {
 })();
 
 const nextConfig: NextConfig = {
+  devIndicators:false,
   images: {
     // Photos are already resized to WebP (sample files and admin uploads), and Cloudflare
     // Workers has no built-in Next.js image optimizer, so images are served as they are.
