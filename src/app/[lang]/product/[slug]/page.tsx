@@ -81,10 +81,10 @@ export default async function ProductPage({ params }: PageProps<"/[lang]/product
         <Link href={href(lang, `/shop/${p.category}`)} className="hover:text-ink">{d.categories[p.category]}</Link>
       </nav>
 
-      <div className="grid gap-6 md:grid-cols-2 md:gap-10">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-6 md:grid-cols-2 md:gap-10">
         <Gallery images={p.images} alt={`${p.brand} ${name}`} sold={sold} soldLabel={d.sold} />
 
-        <div>
+        <div className="min-w-0">
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold uppercase tracking-[0.16em] text-muted">{p.brand}</span>
             {!sold && <span className="rounded-full bg-sea-light px-2.5 py-0.5 text-[11px] font-semibold text-sea">{isSampleCatalog()?(lang==="ar"?"أكد التوفر على واتساب":"Confirm availability"):d.onlyOne}</span>}
