@@ -49,6 +49,10 @@ export const categories: Category[] = [
   "dresses",
   "shoes",
   "bags",
+  "accessories",
+  "skirts",
+  "shorts",
+  "sets",
 ];
 export const conditions: Condition[] = ["like_new", "very_good", "good"];
 export const orderStatuses: OrderStatus[] = ["new", "confirmed", "shipped", "delivered", "cancelled"];
@@ -183,7 +187,7 @@ const ar = {
   genders: { men: "رجالي", women: "حريمي", kids: "أطفال", unisex: "للاتنين" } as Record<Gender, string>,
   categories: {
     jackets: "جواكت", coats: "بالطوهات", jeans: "الجينز", pants: "بناطيل", shirts: "قمصان وبلوزات", tshirts: "تيشيرتات وبولو",
-    knitwear: "تريكوهات", hoodies: "هوديز", dresses: "فساتين", shoes: "شوزات", bags: "شنط",
+    knitwear: "تريكوهات", hoodies: "هوديز", dresses: "فساتين", shoes: "شوزات", bags: "شنط", accessories: "إكسسوارات", skirts: "جيبات", shorts: "شورتات", sets: "أطقم",
   } as Record<Category, string>,
   conditions: { like_new: "زي الجديد", very_good: "حالة ممتازة", good: "حالة كويسة" } as Record<Condition, string>,
   measures: {
@@ -329,7 +333,7 @@ const en: Dict = {
   genders: { men: "Men", women: "Women", kids: "Kids", unisex: "Unisex" },
   categories: {
     jackets: "Jackets", coats: "Coats", jeans: "Denim", pants: "Trousers", shirts: "Shirts & blouses", tshirts: "Tees & polos",
-    knitwear: "Knitwear", hoodies: "Hoodies", dresses: "Dresses", shoes: "Shoes", bags: "Bags",
+    knitwear: "Knitwear", hoodies: "Hoodies", dresses: "Dresses", shoes: "Shoes", bags: "Bags", accessories: "Accessories", skirts: "Skirts", shorts: "Shorts", sets: "Matching sets",
   },
   conditions: { like_new: "Like new", very_good: "Very good", good: "Good" },
   measures: {
