@@ -358,20 +358,32 @@ app.post("/account/orders", async (c) => {
     return c.json({ error: "invalid", field: "governorate" }, 400);
   const selected = await db(c)
     .prepare(
-      `SELECT data,stock,price,published FROM products WHERE id IN (${ids.map(() => "?").join(",")})`,
+      `SELECT data,stock,price,published,inventory_confirmed FROM products WHERE id IN (${ids.map(() => "?").join(",")})`,
     )
     .bind(...ids)
-    .all<{ data: string; stock: number; price: number; published: number }>();
+    .all<{
+      data: string;
+      stock: number;
+      price: number;
+      published: number;
+      inventory_confirmed: number;
+    }>();
   const products = selected.results.map((p) => ({
     ...JSON.parse(p.data),
     stock: p.stock,
     price: p.price,
     published: p.published,
-  })) as (Product & { published: number })[];
+    inventory_confirmed: p.inventory_confirmed,
+  })) as (Product & { published: number; inventory_confirmed: number })[];
   const sold = ids.filter(
     (id) => !products.some((p) => p.id === id && p.stock === 1 && p.published),
   );
   if (sold.length) return c.json({ error: "sold", sold }, 409);
+  const unconfirmed = products
+    .filter((p) => !p.inventory_confirmed)
+    .map((p) => p.id);
+  if (unconfirmed.length)
+    return c.json({ error: "inventory_unconfirmed", items: unconfirmed }, 422);
   const subtotal = products.reduce((s, p) => s + p.price, 0);
   const id = crypto.randomUUID();
   const order: Order = {
@@ -439,7 +451,7 @@ app.get("/admin/:kind", async (c) => {
   if (kind === "products") {
     const r = await db(c)
       .prepare(
-        "SELECT data,price,stock,published,revision FROM products ORDER BY updated_at DESC LIMIT 5000",
+        "SELECT data,price,stock,published,revision,inventory_confirmed FROM products ORDER BY updated_at DESC LIMIT 5000",
       )
       .all<{
         data: string;
@@ -447,6 +459,7 @@ app.get("/admin/:kind", async (c) => {
         stock: number;
         published: number;
         revision: number;
+        inventory_confirmed: number;
       }>();
     return c.json({
       items: r.results.map((p) => ({
@@ -455,6 +468,7 @@ app.get("/admin/:kind", async (c) => {
         stock: p.stock,
         published: !!p.published,
         _revision: p.revision,
+        inventory_confirmed: !!p.inventory_confirmed,
       })),
     });
   }
@@ -485,7 +499,7 @@ app.put("/admin/products", async (c) => {
   const x = p.data;
   const result = await db(c)
     .prepare(
-      "INSERT INTO products(id,slug,price,stock,published,data) VALUES(?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET slug=excluded.slug,price=excluded.price,stock=excluded.stock,published=excluded.published,data=excluded.data,revision=products.revision+1,updated_at=CURRENT_TIMESTAMP WHERE products.revision=?",
+      "INSERT INTO products(id,slug,price,stock,published,data) VALUES(?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET slug=excluded.slug,price=excluded.price,stock=excluded.stock,published=excluded.published,data=excluded.data,revision=products.revision+1,inventory_confirmed=0,updated_at=CURRENT_TIMESTAMP WHERE products.revision=?",
     )
     .bind(
       x.id,
@@ -498,6 +512,21 @@ app.put("/admin/products", async (c) => {
     )
     .run();
   return result.meta.changes
+    ? c.json({ ok: true })
+    : c.json({ error: "stale_product_reload" }, 409);
+});
+app.patch("/admin/products/:id/inventory", async (c) => {
+  const p = z
+    .object({ confirmed: z.boolean(), revision: z.number().int().positive() })
+    .safeParse(await body(c));
+  if (!p.success) return c.json({ error: "invalid" }, 400);
+  const r = await db(c)
+    .prepare(
+      "UPDATE products SET inventory_confirmed=?,revision=revision+1 WHERE id=? AND revision=?",
+    )
+    .bind(p.data.confirmed ? 1 : 0, c.req.param("id"), p.data.revision)
+    .run();
+  return r.meta.changes
     ? c.json({ ok: true })
     : c.json({ error: "stale_product_reload" }, 409);
 });
