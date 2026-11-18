@@ -6,16 +6,16 @@ import { Gallery } from "@/components/Gallery";
 import { BuyBox } from "@/components/BuyBox";
 import { ProductCard } from "@/components/ProductCard";
 import { SectionHead } from "@/components/Section";
-import { getBuildSlugs, getProduct, getSimilar, isSampleCatalog } from "@/lib/data";
+import { getProduct, getSimilar, isSampleCatalog } from "@/lib/data";
 import { conditions, formatPrice, href, pick, t } from "@/lib/i18n";
 import { snap } from "@/lib/snap";
 import { site } from "@/lib/config";
 import type { Lang, MeasureKey } from "@/lib/types";
 
 
-export async function generateStaticParams() {
-  return (await getBuildSlugs()).map((slug) => ({ slug }));
-}
+// Stock and catalog changes are read from D1 on every product request.
+// An empty static-param list would make on-demand product rendering static and reject connection().
+export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/product/[slug]">): Promise<Metadata> {
   const { lang: l, slug } = await params;
