@@ -42,9 +42,14 @@ beforeAll(async () => {
   DB = (await mf.getD1Database("DB")) as unknown as D1Database;
   const sql = readFileSync("migrations/0001_accounts_store.sql", "utf8");
   await DB.exec(sql.replace(/\n/g, " "));
+  await DB.exec(
+    readFileSync("migrations/0002_confirmed_inventory.sql", "utf8")
+      .replace(/^--.*$/gm, "")
+      .replace(/\n/g, " "),
+  );
   for (const p of sampleProducts.slice(0, 3))
     await DB.prepare(
-      "INSERT INTO products(id,slug,price,stock,published,data) VALUES(?,?,?,?,1,?)",
+      "INSERT INTO products(id,slug,price,stock,published,inventory_confirmed,data) VALUES(?,?,?,?,1,1,?)",
     )
       .bind(p.id, p.slug, p.price, 1, JSON.stringify(p))
       .run();
@@ -130,6 +135,31 @@ describe("account security and persisted store", () => {
       secondCookie,
     );
     expect((await saved.json()).cart).toHaveLength(0);
+  });
+  it("rejects design-catalog items until inventory is explicitly confirmed", async () => {
+    await DB.prepare("UPDATE products SET inventory_confirmed=0 WHERE id=?")
+      .bind(sampleProducts[0].id)
+      .run();
+    const r = await request(
+      "/account/orders",
+      "POST",
+      {
+        customer_name: "Test Customer",
+        phone: "01012345678",
+        governorate: sampleShipping[0].code,
+        city: "Cairo",
+        address: "10 Test street",
+        item_ids: [sampleProducts[0].id],
+        payment_method: "cod",
+      },
+      cookie,
+      { "Idempotency-Key": crypto.randomUUID() },
+    );
+    expect(r.status).toBe(422);
+    expect((await r.json()).error).toBe("inventory_unconfirmed");
+    await DB.prepare("UPDATE products SET inventory_confirmed=1 WHERE id=?")
+      .bind(sampleProducts[0].id)
+      .run();
   });
   it("atomically reserves one-off stock with idempotent order retries", async () => {
     const input = {
