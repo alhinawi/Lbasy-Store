@@ -22,7 +22,7 @@ export function CardCarousel({
   const track = useRef<HTMLDivElement>(null);
   const [index, setIndex] = useState(0);
   const touch = useRef({ x: 0, moved: false });
-  const photos = images.length ? images : ["/editorial/rack.webp"];
+  const photos = images.filter(Boolean);
   const ar = lang === "ar";
   function go(i: number) {
     const el = track.current;
@@ -89,7 +89,6 @@ export function CardCarousel({
             className="card-carousel-slide"
             tabIndex={i === index ? 0 : -1}
             aria-label={`${alt} (${i + 1}/${photos.length})`}
-            aria-hidden={i !== index}
           >
             <ProductImage
               src={src}

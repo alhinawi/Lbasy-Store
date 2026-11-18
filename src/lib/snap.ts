@@ -11,6 +11,7 @@ export interface ItemSnap {
   compare_at_price?: number | null;
   condition: Product["condition"];
   image: string;
+  images?: string[];
   stock: number;
 }
 
@@ -25,5 +26,6 @@ export const snap = (p: Product): ItemSnap => ({
   compare_at_price: p.compare_at_price,
   condition: p.condition,
   image: p.images[0] ?? "",
+  images: p.images,
   stock: p.stock,
 });
