@@ -182,7 +182,7 @@ const ar = {
   copied: "اتنسخ اللينك",
   genders: { men: "رجالي", women: "حريمي", kids: "أطفال", unisex: "للاتنين" } as Record<Gender, string>,
   categories: {
-    jackets: "جواكت", coats: "بالطوهات", jeans: "جينز", pants: "بناطيل", shirts: "قمصان وبلوزات", tshirts: "تيشيرتات وبولو",
+    jackets: "جواكت", coats: "بالطوهات", jeans: "الجينز", pants: "بناطيل", shirts: "قمصان وبلوزات", tshirts: "تيشيرتات وبولو",
     knitwear: "تريكوهات", hoodies: "هوديز", dresses: "فساتين", shoes: "شوزات", bags: "شنط",
   } as Record<Category, string>,
   conditions: { like_new: "زي الجديد", very_good: "حالة ممتازة", good: "حالة كويسة" } as Record<Condition, string>,
@@ -328,7 +328,7 @@ const en: Dict = {
   copied: "Link copied",
   genders: { men: "Men", women: "Women", kids: "Kids", unisex: "Unisex" },
   categories: {
-    jackets: "Jackets", coats: "Coats", jeans: "Jeans", pants: "Trousers", shirts: "Shirts & blouses", tshirts: "Tees & polos",
+    jackets: "Jackets", coats: "Coats", jeans: "Denim", pants: "Trousers", shirts: "Shirts & blouses", tshirts: "Tees & polos",
     knitwear: "Knitwear", hoodies: "Hoodies", dresses: "Dresses", shoes: "Shoes", bags: "Bags",
   },
   conditions: { like_new: "Like new", very_good: "Very good", good: "Good" },

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { Listing } from "@/components/Listing";
 import { categories, genders, href, t } from "@/lib/i18n";
@@ -71,6 +72,19 @@ export default async function ShopPage({ params, searchParams }: PageProps<"/[la
             </Link>
           ))}
         </div>
+      )}
+      {parsed.gender === "kids" && (
+        <section className="mb-8 grid overflow-hidden border border-line sm:grid-cols-2" aria-label={lang === "ar" ? "ستايل الأطفال" : "Kids editorial"}>
+          <div className="relative h-80 bg-cream sm:h-96">
+            <Image src="/editorial/kids-denim.webp" alt={lang === "ar" ? "طفل يرتدي جاكيت وبنطلون جينز" : "Child wearing a denim jacket and jeans"} fill sizes="(max-width: 700px) 90vw, 45vw" className="object-cover object-[50%_35%]" />
+          </div>
+          <div className="flex flex-col justify-center gap-4 p-7 sm:p-10">
+            <span className="editorial-kicker">THE LITTLE REWEAR EDIT</span>
+            <h2 className="text-3xl">{lang === "ar" ? "ستايل صغير. حكايات كبيرة." : "Little pieces. Big stories."}</h2>
+            <p className="text-sm leading-7">{lang === "ar" ? "اختيارات للأطفال، قطعة قطعة. شوف المقاس والحالة في تفاصيل كل قطعة." : "One-of-a-kind finds for kids. Check each listing for its size and condition."}</p>
+            <small className="text-xs text-muted">{lang === "ar" ? "صورة ستايل توضيحية، مش تصوير لمنتج معروض للبيع." : "Editorial style photograph, not an image of a listed product."}</small>
+          </div>
+        </section>
       )}
       <Listing lang={lang} filters={filters} basePath={base} />
     </div>
