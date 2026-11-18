@@ -60,8 +60,9 @@ export function DropsPanel() {
   };
 
   const remove = async (slug: string) => {
-    if (!confirm("تمسح الشحنة؟ القطع نفسها مش هتتمسح.")) return;
-    await adminApi.deleteDrop(slug).catch((e) => setErr(e.message));
+    if (!confirm("تخفي الشحنة من المتجر؟ كل بياناتها هتفضل محفوظة.")) return;
+    const drop=drops?.find(d=>d.slug===slug);
+    if(drop) await adminApi.saveDrop({...drop,published:false},slug).catch((e) => setErr(e.message));
     setEdit(null);
     load();
   };
@@ -129,7 +130,7 @@ export function DropsPanel() {
           </div>
           <div className="mt-4 flex gap-2">
             {edit.original && (
-              <button onClick={() => remove(edit.original!)} className="btn-ghost text-clay" aria-label="امسح">
+              <button onClick={() => remove(edit.original!)} className="btn-ghost text-clay" aria-label="إخفاء الشحنة">
                 <Trash2 className="h-4 w-4" />
               </button>
             )}

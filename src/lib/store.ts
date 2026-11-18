@@ -46,7 +46,7 @@ export const useShop = create<ShopState>()(
     }),
     {
       name: "lbasy-shop",
-      partialize: (s) => ({ cart: s.cart, favorites: s.favorites, lastOrders: s.lastOrders }),
+      partialize: (s) => ({ cart: s.cart, favorites: s.favorites }),
     },
   ),
 );
