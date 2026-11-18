@@ -27,7 +27,7 @@ export function Gallery({ images, alt, sold, soldLabel }: { images: string[]; al
   };
 
   return (
-    <div className="md:sticky md:top-24">
+    <div className="min-w-0 max-w-full md:sticky md:top-24">
       <div className="relative -mx-4 sm:mx-0">
         <div ref={track} onScroll={onScroll} className="no-scrollbar flex snap-x snap-mandatory overflow-x-auto sm:rounded-[24px]">
           {images.map((src, i) => (
@@ -65,12 +65,12 @@ export function Gallery({ images, alt, sold, soldLabel }: { images: string[]; al
         </div>
       )}
       {images.length > 1 && (
-        <div className="mt-3 flex gap-3">
+        <div className="no-scrollbar mt-3 flex max-w-full gap-3 overflow-x-auto overscroll-x-contain pb-2">
           {images.map((src, i) => (
             <button
               key={src + i}
               onClick={() => go(i)}
-              className={`relative aspect-[4/5] w-20 overflow-hidden rounded-xl border-2 transition ${i === idx ? "border-ink" : "border-transparent opacity-70 hover:opacity-100"}`}
+              className={`relative aspect-[4/5] w-20 shrink-0 overflow-hidden rounded-xl border-2 transition ${i === idx ? "border-ink" : "border-transparent opacity-70 hover:opacity-100"}`}
               aria-label={views[i] || `${i + 1}`}
               aria-pressed={i === idx}
             >
